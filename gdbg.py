@@ -1,17 +1,15 @@
-import os
 import json
 import rumps
-
 from py2x import Resources
 from pydexcom import Dexcom
 
-# TODO: resources correctly
+
+# TODO: create timing element and logic around it
 
 
-# TODO: finish moving this to class
 class DexcomAPI:
-    def __init__(self, dexcom_dir):
-        self.credentials = self.load_credentials(dexcom_dir + "dexcom_credentials.json")
+    def __init__(self):
+        self.credentials = self.load_credentials("dexcom_credentials.json")
 
         self.reading = {}
         self.value = 0
@@ -66,33 +64,31 @@ class DexcomAPI:
     def get_reading(self):
         self.login_dexcom()
         self.get_reading()
+        # TODO: update timestamp
         self.create_status()
         self.colorize_status()
 
 
 class GDBG(object):
     def __init__(self):
-        dexcom_dir = os.path.expanduser("~") + "/.dexcom/"
-
         self.app_name = "gdbg"
-        self.dexcom = DexcomAPI(dexcom_dir)
-        self.state_file = (dexcom_dir + "/bg_status.txt",)
-        self.state_color_file = (dexcom_dir + "/bg_color_status.txt",)
+        self.dexcom = DexcomAPI()
+        self.state_file = ("bg_status.txt",)
+        self.state_color_file = ("bg_color_status.txt",)
 
         self.app = rumps.App(self.app_name)
-        # TODO: menu
-
-        # self.set_up_menu()
-        # self.timer = rumps.Timer(self.on_tick, 1)
-        # self.interval = self.config["interval"]
-        # self.start_pause_button = rumps.MenuItem(
-        #     title=self.config["start"], callback=self.start_timer
-        # )
-        # self.stop_button = rumps.MenuItem(title=self.config["stop"], callback=None)
-        # self.app.menu = [self.start_pause_button, self.stop_button]
+        self.set_up_menu()
+        self.quit = rumps.MenuItem(title="Quit", callback=self.quit_app)
+        self.app.menu = [self.quit]
 
     def set_up_menu(self):
         self.app.title = self.app_name
+
+    def quit_app(self):
+        rumps.quit_application()
+
+    def update_status(self):
+        self.app.title = self.dexcom.status
 
     # TODO: called by timer
     def write_state(self):
@@ -106,10 +102,14 @@ class GDBG(object):
 
     def get_dexcom_reading(self):
         self.dexcom.get_reading()
+        self.update_status()
         self.write_state()
 
     def run(self):
         self.app.run()
+
+        # NOTE: below is just for dev
+        self.get_dexcom_reading()
 
 
 if __name__ == "__main__":

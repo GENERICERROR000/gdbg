@@ -3,3 +3,7 @@
 
 # illustrator file
 *.ai
+
+# build
+build
+.eggs
