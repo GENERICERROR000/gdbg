@@ -38,6 +38,7 @@ class DexcomAPI:
 
     def get_current_glucose_reading(self):
         self.reading = self.dexcom.get_current_glucose_reading()
+        # TODO: this is None if none in past 10, so thats indicator for retry
 
     def create_status(self):
         bg = self.reading
@@ -83,7 +84,9 @@ class GDBG(object):
         self.set_up_menu()
         self.app.menu = [
             "last checked",
+            "change: +/-",
             None,
+            "[ ] alert on low",
             rumps.MenuItem(title="Refresh", callback=self.get_dexcom_reading),
             None,
         ]

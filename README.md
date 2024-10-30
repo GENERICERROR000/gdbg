@@ -57,17 +57,23 @@ TODO: how to
 NOTE: using [anaconda](https://gist.github.com/ryanorsinger/7d89ad58901b5590ec3e1f23d7b9f887) on macos
 
 ```sh
-r
+conda create --name gdbg python=3.11
 conda activate gdbg  
 
 pip uninstall setuptools # need an older version
 pip install --no-cache-dir -r requirements.txt 
+```
+
+### known issues
+
+TODO: more here (like text explaining)
+
+```sh
+# solution if issue with `@rpath/libffi.8.dylib`
+ln -sf /opt/homebrew/opt/libffi/lib/libffi.8.dylib /usr/local/lib/
 
 # DEBUG
 dist/gdbg.app/Contents/MacOS/gdbg
-
-# solution if issue with `@rpath/libffi.8.dylib`
-ln -sf /opt/homebrew/opt/libffi/lib/libffi.8.dylib /usr/local/lib/
 ```
 
 ## using in zsh $PROMPT
@@ -105,12 +111,21 @@ export PROMPT="$PROMPT\$(get_bg)"
 
 ## TODO:
 
+* [ ] do i have to login for every call?
+  * could check with logic here: https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341 
 * [ ] logic for time interval (rumps has thing, but luka-mini has dynamic approach - can they be mixed)
   * [ ] will need to fallback to 10 min if no timestamp available
   * [ ] show how many minutes since last retrieved
   * [ ] handle these cases:
-    * [ ] icon for no recent readings
-    * [ ] icon for retrying in 10 min
+    * [ ] no recent readings (and icon)
+    * [ ] retrying in 10 min (and icon) -> data has gone "stale"
+    * https://github.com/gagebenne/pydexcom/blob/main/pydexcom/const.py
+* [ ] show change in direction
+* [ ] notification on low? (ability to toggle?)
 * [ ] have it start as login item
+* [ ] add images to README for:
+  * [ ] menu bar app
+  * [ ] cli prompt
+
 
 WARN: issue with newer setup tools in python 3.12: https://github.com/ronaldoussoren/py2app/issues/531
