@@ -1,20 +1,15 @@
-import os
 from setuptools import setup
 
 APP = ["gdbg.py"]
-# TODO: data files may be wrong
-DATA_FILES = [("Resources", [os.path.expanduser("~") + "/.dexcom/" + "*"])]
+DATA_FILES = []
 OPTIONS = {
+    "argv_emulation": True,
     "iconfile": "assets/gdbg_logo.icns",
     "plist": {
         "CFBundleShortVersionString": "0.0.1",
         "LSUIElement": True,
     },
-    "packages": [
-        "py2x",
-        "pydexcom",
-        "rumps",
-    ],
+    "packages": ["imp", "py2x", "pydexcom", "rumps"],
 }
 
 setup(

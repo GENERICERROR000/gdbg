@@ -1,0 +1,1 @@
+from py2x.resources import Resources
