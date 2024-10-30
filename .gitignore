@@ -5,6 +5,7 @@
 *.ai
 
 # build
+__pycache__
 build
 dist
 .eggs
