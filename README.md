@@ -10,9 +10,9 @@
 
 > gdbg: *get dexcom blood glucose*
 
-a python app that displays blood glucose in the macos menu bar. retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library. it also writes the blood glucose and arrow (with terminal colors) to a state file that can be used for displaying data in your terminal.
+a python app that displays blood glucose in the macos menu bar. retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library. it also writes the blood glucose and trend arrow (with terminal colors) to a state file that can be used for displaying data in your terminal. there is also a version that can be run on linux (used on pop_os) as a service to update the state files for use in the terminal.
 
-this app was inspire by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). i wanted to be able to access the blood glucose data outside of the app for other uses.
+this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). i wanted to be able to access the blood glucose data outside of the app for other uses.
 
 ## how to use
 
@@ -76,6 +76,8 @@ ln -sf /opt/homebrew/opt/libffi/lib/libffi.8.dylib /usr/local/lib/
 dist/gdbg.app/Contents/MacOS/gdbg
 ```
 
+TODO: issue with newer setup tools in python 3.12: https://github.com/ronaldoussoren/py2app/issues/531
+
 ## using in zsh $PROMPT
 
 to use in zsh prompt, update `$PROMPT` in `$HOME/.zshrc`. the backslash when setting `$PROMPT` to execute the function to read the bg text file is __critical__ (will not work otherwise).
@@ -92,10 +94,10 @@ export PROMPT="$PROMPT\$(get_bg)"
 
 ## credits
 
+*assets*
+
 * TODO: izzy for logo
 * TODO: github for font used in logo
-
-## references
 
 *packages*
 
@@ -104,28 +106,33 @@ export PROMPT="$PROMPT\$(get_bg)"
 * [dante-biase/py2app](https://github.com/dante-biase/py2app)
   * [pypa/setuptools](https://github.com/pypa/setuptools)
 
-*articles*
+## references
 
+* [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main)
 * [Create a macOS Menu Bar App with Python (Pomodoro Timer) - Camillo Visini](https://camillovisini.com/coding/create-macos-menu-bar-app-pomodoro)
 * [Glucose Readings in a Terminal Prompt - Hart Hoover](https://harthoover.com/glucose-readings-in-a-terminal-prompt/)
 
 ## TODO:
 
-* [ ] do i have to login for every call?
-  * could check with logic here: https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341 
-* [ ] logic for time interval (rumps has thing, but luka-mini has dynamic approach - can they be mixed)
+* [ ] refresh login session id if it fails
+  * pydexcom does this here: https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341 
+* [ ] show delta (+/-)
+  * will need to store previous reading
+
+* [ ] logic for time interval
   * [ ] will need to fallback to 10 min if no timestamp available
   * [ ] show how many minutes since last retrieved
   * [ ] handle these cases:
     * [ ] no recent readings (and icon)
     * [ ] retrying in 10 min (and icon) -> data has gone "stale"
     * https://github.com/gagebenne/pydexcom/blob/main/pydexcom/const.py
-* [ ] show change in direction
-* [ ] notification on low? (ability to toggle?)
 * [ ] have it start as login item
 * [ ] add images to README for:
   * [ ] menu bar app
   * [ ] cli prompt
+* [ ] linux version
 
-
-WARN: issue with newer setup tools in python 3.12: https://github.com/ronaldoussoren/py2app/issues/531
+* [ ] have final app build to applications dir?
+* [ ] notification on low? (ability to toggle?)
+* [ ] color the menu bar (tis a hack)
+  * https://www.phind.com/search?cache=kx66qmtzfex8yzqy2ko0vgup 
