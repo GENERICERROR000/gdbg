@@ -12,7 +12,7 @@
 
 a python app that displays blood glucose in the macos menu bar. retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library. it also writes the blood glucose and trend arrow (with terminal colors) to a state file that can be used for displaying data in your terminal. there is also a version that can be run on linux (used on pop_os) as a service to update the state files for use in the terminal.
 
-this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). i wanted to be able to access the blood glucose data outside of the app for other uses.
+this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). this is a __fantastic__ app and would recommend for people who want a seamless app experience. i wanted to be able to access the blood glucose data outside of the app for other uses.
 
 ## how to use
 
@@ -66,7 +66,7 @@ pip install --no-cache-dir -r requirements.txt
 
 ### known issues
 
-TODO: more here (like text explaining)
+TODO: more here (text explaining)
 
 ```sh
 # solution if issue with `@rpath/libffi.8.dylib`
@@ -96,15 +96,14 @@ export PROMPT="$PROMPT\$(get_bg)"
 
 *assets*
 
-* TODO: izzy for logo
-* TODO: github for font used in logo
+* logo by [izzy bulling - @izval](https://www.instagram.com/izval/)
+* [modak](https://github.com/EkType/Modak) font used in logo
 
 *packages*
 
 * [gagebenne/pydexacom](https://github.com/gagebenne/pydexcom)
 * [jaredks/rumps](https://github.com/jaredks/rumps)
 * [dante-biase/py2app](https://github.com/dante-biase/py2app)
-  * [pypa/setuptools](https://github.com/pypa/setuptools)
 
 ## references
 
@@ -114,25 +113,29 @@ export PROMPT="$PROMPT\$(get_bg)"
 
 ## TODO:
 
+__(1)__
+
+* [ ] for timer, add logic if time has passed... may cause crash or infinite calls...
+* [ ] have it update time since last check
+
+__(2)__
+
 * [ ] refresh login session id if it fails
   * pydexcom does this here: https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341 
 * [ ] show delta (+/-)
   * will need to store previous reading
 
-* [ ] logic for time interval
-  * [ ] will need to fallback to 10 min if no timestamp available
-  * [ ] show how many minutes since last retrieved
-  * [ ] handle these cases:
-    * [ ] no recent readings (and icon)
-    * [ ] retrying in 10 min (and icon) -> data has gone "stale"
-    * https://github.com/gagebenne/pydexcom/blob/main/pydexcom/const.py
+__(3)__
+
 * [ ] have it start as login item
 * [ ] add images to README for:
   * [ ] menu bar app
   * [ ] cli prompt
-* [ ] linux version
-
 * [ ] have final app build to applications dir?
+
+__(4)__
+
 * [ ] notification on low? (ability to toggle?)
 * [ ] color the menu bar (tis a hack)
   * https://www.phind.com/search?cache=kx66qmtzfex8yzqy2ko0vgup 
+* [ ] linux version

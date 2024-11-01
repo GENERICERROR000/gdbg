@@ -6,10 +6,11 @@ class DexcomAPI:
     def __init__(self, dexcom_dir):
         self.credentials = self.load_credentials(dexcom_dir + "dexcom_credentials.json")
 
-        self.reading = {}
-        self.bg_value = 0
-        self.previous_bg_value = 0
-        self.delta = 0
+        self.reading = None
+        self.bg_value = None
+        self.previous_bg_value = None
+        self.delta = None
+        self.datetime = ""
         self.status = ""
         self.color_status = ""
 
@@ -41,7 +42,6 @@ class DexcomAPI:
 
     def get_current_glucose_reading(self):
         self.reading = self.dexcom.get_current_glucose_reading()
-        # TODO: this is None if none in past 10, so thats indicator for retry
 
     def create_status(self):
         bg = self.reading
@@ -70,6 +70,5 @@ class DexcomAPI:
 
     def get_reading(self):
         self.get_current_glucose_reading()
-        # TODO: update timestamp
         self.create_status()
         self.colorize_status()
