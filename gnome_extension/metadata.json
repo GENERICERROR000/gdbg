@@ -1,0 +1,7 @@
+{
+    "uuid": "gdbg@gjs.guide",
+    "name": "gdbg",
+    "description": "get dexcom blood glucose",
+    "shell-version": ["45"],
+    "url": "https://gjs.guide/extensions"
+}

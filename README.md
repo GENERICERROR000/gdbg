@@ -152,10 +152,9 @@ __(2)__
 
 * [ ] have final app build to applications dir?
 * [ ] have it start as login item
-* [ ] add images to README for:
-  * [ ] menu bar app
-  * [ ] cli prompt
 
 __(3)__
 
 * [ ] linux version
+  * [ ] run `dexcom_handler.py` as service
+  * [ ] create top bar extension
