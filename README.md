@@ -1,10 +1,10 @@
 # gdbg  
 
 <img 
+  title="gdbg logo"
   src="assets/gdbg_logo.png" 
   width="80"
   alt="red blood drop with text 'gdbg' centered"
-  title="asd"
 />
 
 ## overview
@@ -15,9 +15,19 @@ a python app that displays blood glucose in the macos menu bar. retrieves blood 
 
 this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). this is a __fantastic__ app and would recommend for people who want a seamless app experience. i wanted to be able to access the blood glucose data outside of the app for other uses.
 
-![screenshot of menu bar app in use](assets/menu_bar.png "screenshot of menu bar app")
+<img 
+  title="menu bar app in use"
+  src="assets/menu_bar.png" 
+  max-width="1000"
+  alt="screenshot of menu bar app in use"
+/>
 
-![screenshot of blood sugar in terminal prompt](assets/terminal_prompt.png "screenshot of blood sugar in terminal prompt")
+<img 
+  title="blood sugar in terminal prompt"
+  src="assets/terminal_prompt.png" 
+  max-width="1000"
+  alt="screenshot of blood sugar in terminal prompt"
+/>
 
 ## how to use
 
