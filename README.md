@@ -18,14 +18,14 @@ this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-m
 <img 
   title="menu bar app in use"
   src="assets/menu_bar.png" 
-  max-width="1000"
+  style="max-width: 500"
   alt="screenshot of menu bar app in use"
 />
 
 <img 
   title="blood sugar in terminal prompt"
   src="assets/terminal_prompt.png" 
-  max-width="1000"
+  style="max-width: 500"
   alt="screenshot of blood sugar in terminal prompt"
 />
 
