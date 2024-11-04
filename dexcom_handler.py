@@ -23,7 +23,6 @@ class Ticker:
         self.count += self.time_step
 
         if self.count >= self.interval and not self.updating:
-            # print(datetime.now())
             self.updating = True
             self.callback()
 
@@ -31,10 +30,10 @@ class Ticker:
             future_datetime = timestamp + timedelta(seconds=310)  # Add 5:10 min
             interval = (future_datetime - datetime.now(timezone.utc)).seconds
 
-            self.interval = interval
+            # if time has passed, try again every minute
+            self.interval = max(60, interval)
             self.count = 0
-            # TODO: for now stop from running more than once
-            # self.updating = False
+            self.updating = False
 
     def start_ticker(self):
         while True:
@@ -59,16 +58,8 @@ class DexcomHandler:
         self.reading = None
         self.bg_value = None
         self.previous_bg_value = None
-
-        self.status = ""
-        self.color_status = ""
-        self.colors = {
-            "red": "\033[91m",
-            "green": "\033[92m",
-            "yellow": "\033[93m",
-            "blue": "\033[94m",
-            "end": "\033[0m",
-        }
+        self.datetime = None
+        self.status = None
 
         self.login_dexcom()
 
@@ -84,50 +75,39 @@ class DexcomHandler:
                 username=credentials["username"], password=credentials["password"]
             )
         except Exception as e:
-            # TODO: logging, print for now
             print(f"Error setting up client: {e}")
             self.reading = "ERROR"
 
     def get_current_glucose_reading(self):
         self.reading = self.dexcom.get_current_glucose_reading()
+
+    def update_time_and_delta(self):
         self.ticker.datetime = self.reading.datetime
+        self.datetime = self.reading.datetime
+
+        if not self.previous_bg_value:
+            self.previous_bg_value = self.reading.value
+        else:
+            self.previous_bg_value = self.bg_value
 
     def create_status(self):
         bg = self.reading
         value = bg.value
         arrow = bg.trend_arrow
-        print(bg)
 
         self.bg_value = value
         self.status = f"{value} {arrow}"
-
-    def colorize_status(self):
-        value = self.bg_value
-        colors = self.colors
-        end = colors["end"]
-
-        if 80 <= value <= 180:
-            color = colors["green"]
-        elif value >= 181:
-            color = colors["red"]
-        elif value <= 79:
-            color = colors["yellow"]
-        else:
-            color = colors["blue"]
-
-        self.color_status = f"{color}{self.status}{end}"
+        # NOTE: for debug
+        # print(bg)
 
     def write_state(self):
         with open(self.state_file, "w") as f:
             f.write(self.status)
 
-        with open(self.state_color_file, "w") as f:
-            f.write(self.color_status)
-
     def get_reading(self):
         self.get_current_glucose_reading()
+        self.update_time_and_delta()
         self.create_status()
-        self.colorize_status()
         self.write_state()
 
     def set_callback(self, callback):

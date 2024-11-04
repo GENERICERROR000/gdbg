@@ -1,5 +1,6 @@
 import os
 import rumps
+from datetime import datetime, timezone
 from dexcom_handler import DexcomHandler
 from threading import Thread
 
@@ -10,34 +11,68 @@ class GDBG(object):
         self.setup_menu()
         self.setup_dexcom(dexcom_dir, time_step)
 
+    def setup_menu(self):
+        self.app.title = "--"
+        self.app.menu = [
+            "delta",
+            "last update",
+            rumps.separator,
+            rumps.MenuItem(title="Refresh", callback=self.menu_callback),
+            rumps.separator,
+        ]
+
     def setup_dexcom(self, dexcom_dir, time_step):
         self.dexcom = DexcomHandler(dexcom_dir, time_step)
-        self.dexcom.set_callback(self.get_dexcom_reading_callback)
+        self.dexcom.set_callback(self.ticker_callback)
 
     def begin_refresh_ticker(self):
         self.dexcom.run()
 
+    def menu_callback(self, _):
+        self.get_dexcom_reading()
+
+    def ticker_callback(self):
+        self.get_dexcom_reading()
+
     def get_dexcom_reading(self):
         self.dexcom.get_reading()
-        self.update_status()
+        self.update_menu()
 
-    def get_dexcom_reading_callback(self, _):
-        self.dexcom.get_reading()
-        self.update_status()
+    def quit_app(self, _):
+        rumps.quit_application()
 
-    def update_status(self):
+    # TODO: this needs to update every x amount of time
+    # (currently only called when dexcom bg updates... may need another ticker)
+    # (https://camillovisini.com/coding/create-macos-menu-bar-app-pomodoro)
+    def calculate_last_update(self):
+        time_diff = datetime.now(timezone.utc) - self.dexcom.datetime
+        minutes_passed = time_diff.total_seconds() / 60
+
+        return f"{minutes_passed:.2f} minutes ago"
+
+    def calculate_delta(self):
+        delta = str(self.dexcom.bg_value - self.dexcom.previous_bg_value)
+        if int(delta) > 0:
+            delta = "+" + delta
+
+        return delta
+
+    def update_menu(self):
         self.app.title = self.dexcom.status
 
-    def setup_menu(self):
-        self.app.title = "--"
-        self.app.menu = [
-            "last checked",
-            "change: +/-",
+        delta = self.calculate_delta()
+        last_update = self.calculate_last_update()
+        new_menu = [
+            delta,
+            last_update,
             rumps.separator,
-            "[ ] alert on low",
-            rumps.MenuItem(title="Refresh", callback=self.get_dexcom_reading),
+            rumps.MenuItem(title="Refresh", callback=self.menu_callback),
             rumps.separator,
+            rumps.MenuItem(title="Quit", callback=self.quit_app),
         ]
+
+        self.app.menu.clear()
+        self.app.menu.update(new_menu)
 
     def start(self):
         self.app.run()
