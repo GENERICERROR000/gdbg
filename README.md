@@ -10,7 +10,7 @@
 
 > gdbg: *get dexcom blood glucose*
 
-a python app that displays blood glucose in the macos menu bar. retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library. it also writes the blood glucose and trend arrow (with terminal colors) to a state file that can be used for displaying data in your terminal. there is also a version that can be run on linux (used on pop_os) as a service to update the state files for use in the terminal.
+a python app that displays blood glucose in the macos menu bar. retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library. it also writes the blood glucose and trend arrow to a state file that can be used for displaying data in your terminal.
 
 this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). this is a __fantastic__ app and would recommend for people who want a seamless app experience. i wanted to be able to access the blood glucose data outside of the app for other uses.
 
@@ -85,7 +85,23 @@ to use in zsh prompt, update `$PROMPT` in `$HOME/.zshrc`. the backslash when set
 # $HOME/.zshrc
 
 function get_bg() {
-    cat $HOME/.dexcom/bg_color_status.txt
+    RED='\033[91m'
+    GREEN='\033[92m'
+    YELLOW='\033[93m'
+    END='\033[0m'
+
+    bg_status=$(cat $HOME/.dexcom/bg_status.txt)
+    value=$(echo "$bg_status" | cut -d' ' -f1)
+
+    if [[ $value -ge 80 && $value -le 180 ]]; then
+        color="$GREEN"
+    elif [[ $value -gt 180 ]]; then
+        color="$YELLOW"
+    elif [[ $value -lt 80 ]]; then
+        color="$RED"
+    fi
+
+    echo "${color}${bg_status}${END}"
 }
 
 export PROMPT="$PROMPT\$(get_bg)"
