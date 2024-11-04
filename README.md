@@ -130,15 +130,10 @@ export PROMPT="$PROMPT\$(get_bg)"
 
 __(1)__
 
-* time bug...
-* move colorize to shell fn and not in app  
-
-__(2)__
-
 * [ ] refresh login session id if it fails
   * pydexcom does this here: https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341 
 
-__(3)__
+__(2)__
 
 * [ ] have final app build to applications dir?
 * [ ] have it start as login item
@@ -146,6 +141,6 @@ __(3)__
   * [ ] menu bar app
   * [ ] cli prompt
 
-__(4)__
+__(3)__
 
 * [ ] linux version

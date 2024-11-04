@@ -7,14 +7,12 @@ from pydexcom import Dexcom
 class Ticker:
     def __init__(self, time_step):
         self.time_step = time_step
-        self.interval = time_step
+        self.interval = 0
         self.count = 0
-
         self.updating = False
         self.delta = None
-        self.datetime = ""
-
-        self.app_runner = False
+        self.datetime = None
+        self.callback = None
 
     def set_callback(self, callback):
         self.callback = callback
@@ -24,10 +22,12 @@ class Ticker:
 
         if self.count >= self.interval and not self.updating:
             self.updating = True
-            self.callback()
+
+            if self.callback:
+                self.callback()
 
             timestamp = self.datetime
-            future_datetime = timestamp + timedelta(seconds=310)  # Add 5:10 min
+            future_datetime = timestamp + timedelta(seconds=320)  # Add 5:20 min
             interval = (future_datetime - datetime.now(timezone.utc)).seconds
 
             # if time has passed, try again every minute
@@ -41,10 +41,7 @@ class Ticker:
             self.ticker_exec()
 
     def run(self):
-        if self.callback:
-            self.start_ticker()
-        else:
-            print("must set callback")
+        self.start_ticker()
 
 
 class DexcomHandler:

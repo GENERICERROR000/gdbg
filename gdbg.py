@@ -8,6 +8,8 @@ from threading import Thread
 class GDBG(object):
     def __init__(self, dexcom_dir, time_step):
         self.app = rumps.App("gdbg")
+        self.update_timer = rumps.Timer(self.update_time_callback, 1)
+
         self.setup_menu()
         self.setup_dexcom(dexcom_dir, time_step)
 
@@ -17,7 +19,7 @@ class GDBG(object):
             "delta",
             "last update",
             rumps.separator,
-            rumps.MenuItem(title="Refresh", callback=self.menu_callback),
+            rumps.MenuItem(title="Refresh", callback=self.refresh_callback),
             rumps.separator,
         ]
 
@@ -25,11 +27,18 @@ class GDBG(object):
         self.dexcom = DexcomHandler(dexcom_dir, time_step)
         self.dexcom.set_callback(self.ticker_callback)
 
+    def refresh_callback(self, _):
+        self.get_dexcom_reading()
+
+    def update_time_callback(self, _):
+        if self.dexcom.datetime:
+            self.update_menu()
+
+    def quit_app_callback(self, _):
+        rumps.quit_application()
+
     def begin_refresh_ticker(self):
         self.dexcom.run()
-
-    def menu_callback(self, _):
-        self.get_dexcom_reading()
 
     def ticker_callback(self):
         self.get_dexcom_reading()
@@ -38,22 +47,23 @@ class GDBG(object):
         self.dexcom.get_reading()
         self.update_menu()
 
-    def quit_app(self, _):
-        rumps.quit_application()
-
     # TODO: this needs to update every x amount of time
     # (currently only called when dexcom bg updates... may need another ticker)
     # (https://camillovisini.com/coding/create-macos-menu-bar-app-pomodoro)
     def calculate_last_update(self):
         time_diff = datetime.now(timezone.utc) - self.dexcom.datetime
-        minutes_passed = time_diff.total_seconds() / 60
+        total_seconds = time_diff.total_seconds()
 
-        return f"{minutes_passed:.2f} minutes ago"
+        minutes = int(total_seconds // 60)
+        seconds = int(total_seconds % 60)
+        formatted_time = f"{minutes:02d}:{seconds:02d}"
+
+        return f"{formatted_time} minutes ago"
 
     def calculate_delta(self):
         delta = str(self.dexcom.bg_value - self.dexcom.previous_bg_value)
         if int(delta) > 0:
-            delta = "+" + delta
+            delta = f"+{delta}"
 
         return delta
 
@@ -66,15 +76,16 @@ class GDBG(object):
             delta,
             last_update,
             rumps.separator,
-            rumps.MenuItem(title="Refresh", callback=self.menu_callback),
+            rumps.MenuItem(title="Refresh", callback=self.refresh_callback),
             rumps.separator,
-            rumps.MenuItem(title="Quit", callback=self.quit_app),
+            rumps.MenuItem(title="Quit", callback=self.quit_app_callback),
         ]
 
         self.app.menu.clear()
         self.app.menu.update(new_menu)
 
     def start(self):
+        self.update_timer.start()
         self.app.run()
 
 
