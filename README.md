@@ -104,6 +104,7 @@ export PROMPT="$PROMPT\$(get_bg)"
 * [gagebenne/pydexacom](https://github.com/gagebenne/pydexcom)
 * [jaredks/rumps](https://github.com/jaredks/rumps)
 * [dante-biase/py2app](https://github.com/dante-biase/py2app)
+* [python-trio/trio](https://github.com/python-trio/trio)
 
 ## references
 
@@ -116,6 +117,9 @@ export PROMPT="$PROMPT\$(get_bg)"
 __(1)__
 
 * [ ] for timer, add logic if time has passed... may cause crash or infinite calls...
+* [ ] needs to check previous timestamp before making call
+  * [ ] then retry every 10 seconds...
+  * [ ] and then if none, then what...
 * [ ] have it update time since last check
 
 __(2)__
