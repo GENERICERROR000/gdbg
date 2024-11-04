@@ -1,6 +1,7 @@
 import os
 import rumps
 from dexcom_handler import DexcomHandler
+from threading import Thread
 
 
 class GDBG(object):
@@ -12,8 +13,6 @@ class GDBG(object):
     def setup_dexcom(self, dexcom_dir, time_step):
         self.dexcom = DexcomHandler(dexcom_dir, time_step)
         self.dexcom.set_callback(self.get_dexcom_reading_callback)
-        # have the Ticker class start the app with trio
-        self.dexcom.set_app_runner(self.app)
 
     def begin_refresh_ticker(self):
         self.dexcom.run()
@@ -40,13 +39,15 @@ class GDBG(object):
             rumps.separator,
         ]
 
-    def run(self):
-        self.begin_refresh_ticker()
-        # self.app.run()
+    def start(self):
+        self.app.run()
 
 
 if __name__ == "__main__":
     dexcom_dir = os.path.expanduser("~") + "/.dexcom/"
 
     app = GDBG(dexcom_dir=dexcom_dir, time_step=5)
-    app.run()
+    ticker_thread = Thread(target=app.begin_refresh_ticker, daemon=True)
+
+    ticker_thread.start()
+    app.start()

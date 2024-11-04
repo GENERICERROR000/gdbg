@@ -1,5 +1,5 @@
 import json
-import trio
+import time
 from datetime import datetime, timedelta, timezone
 from pydexcom import Dexcom
 
@@ -19,41 +19,31 @@ class Ticker:
     def set_callback(self, callback):
         self.callback = callback
 
-    def set_app_runner(self, app):
-        self.app_runner = app
+    def ticker_exec(self):
+        self.count += self.time_step
 
-    async def exec_timer(self):
+        if self.count >= self.interval and not self.updating:
+            # print(datetime.now())
+            self.updating = True
+            self.callback()
+
+            timestamp = self.datetime
+            future_datetime = timestamp + timedelta(seconds=310)  # Add 5:10 min
+            interval = (future_datetime - datetime.now(timezone.utc)).seconds
+
+            self.interval = interval
+            self.count = 0
+            # TODO: for now stop from running more than once
+            # self.updating = False
+
+    def start_ticker(self):
         while True:
-            print("exec_timer")
-            await trio.sleep(self.time_step)
-
-            self.count += self.time_step
-
-            if self.count >= self.interval and not self.updating:
-                self.updating = True
-                self.callback()
-
-                timestamp = self.datetime
-                future_datetime = timestamp + timedelta(seconds=310)  # Add 5:10 min
-                interval = (future_datetime - datetime.now(timezone.utc)).seconds
-
-                self.interval = interval
-                self.count = 0
-                # TODO: for now stop from running more than once
-                # self.updating = False
-
-    async def start_ticker(self):
-        # TODO: properly exit this
-        async with trio.open_nursery() as nursery:
-            nursery.start_soon(self.exec_timer)
-
-            # used to run an app that is using the DexcomHandler class
-            # if self.app_runner:
-            #     nursery.start_soon(self.app_runner.run)
+            time.sleep(self.time_step)
+            self.ticker_exec()
 
     def run(self):
         if self.callback:
-            trio.run(self.start_ticker)
+            self.start_ticker()
         else:
             print("must set callback")
 
@@ -142,9 +132,6 @@ class DexcomHandler:
 
     def set_callback(self, callback):
         self.ticker.set_callback(callback)
-
-    def set_app_runner(self, app):
-        self.ticker.set_app_runner(app)
 
     def run(self):
         self.ticker.run()
