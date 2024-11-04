@@ -18,7 +18,7 @@ this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-m
 <img 
   title="menu bar app in use"
   src="assets/menu_bar.png" 
-  style="max-width: 500px"
+  style="max-width: 500px !important"
   alt="screenshot of menu bar app in use"
 />
 
