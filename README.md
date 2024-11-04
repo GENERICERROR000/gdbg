@@ -11,7 +11,7 @@
 
 > gdbg: *get dexcom blood glucose*
 
-a python app that displays blood glucose in the macos menu bar. retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library. it also writes the blood glucose and trend arrow to a state file that can be used for displaying data in your terminal.
+a python app that displays blood glucose in the macos menu bar. retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library. it also writes the blood glucose and trend arrow to a state file that can be used for displaying data in your terminal (or anything else you want).
 
 this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). this is a __fantastic__ app and would recommend for people who want a seamless app experience. i wanted to be able to access the blood glucose data outside of the app for other uses.
 
@@ -27,7 +27,7 @@ all resources are in the directory: `$HOME/.dexcom`
 
 #### secrets file
 
-this file must be created manually
+*__this file must be created manually__*
 
 * `dexcom_credentials.json`
 
@@ -114,12 +114,12 @@ export PROMPT="$PROMPT\$(get_bg)"
 
 ## credits
 
-*assets*
+assets
 
 * logo by [izzy bulling - @izval](https://www.instagram.com/izval/)
 * [modak](https://github.com/EkType/Modak) font used in logo
 
-*packages*
+packages
 
 * [gagebenne/pydexacom](https://github.com/gagebenne/pydexcom)
 * [jaredks/rumps](https://github.com/jaredks/rumps)
