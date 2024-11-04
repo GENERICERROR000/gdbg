@@ -9,7 +9,7 @@ OPTIONS = {
         "CFBundleShortVersionString": "0.0.1",
         "LSUIElement": True,
     },
-    "packages": ["imp", "py2x", "pydexcom", "rumps"],
+    "packages": ["imp", "pydexcom", "rumps"],
 }
 
 setup(
