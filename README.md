@@ -4,6 +4,7 @@
   src="assets/gdbg_logo.png" 
   width="80"
   alt="red blood drop with text 'gdbg' centered"
+  title="asd"
 />
 
 ## overview
@@ -13,6 +14,10 @@
 a python app that displays blood glucose in the macos menu bar. retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library. it also writes the blood glucose and trend arrow to a state file that can be used for displaying data in your terminal.
 
 this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). this is a __fantastic__ app and would recommend for people who want a seamless app experience. i wanted to be able to access the blood glucose data outside of the app for other uses.
+
+![screenshot of menu bar app in use](assets/menu_bar.png "screenshot of menu bar app")
+
+![screenshot of blood sugar in terminal prompt](assets/terminal_prompt.png "screenshot of blood sugar in terminal prompt")
 
 ## how to use
 
