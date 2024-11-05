@@ -94,8 +94,6 @@ class DexcomHandler:
 
         self.bg_value = value
         self.status = f"{value} {arrow}"
-        # NOTE: for debug
-        # print(bg)
 
     def write_state(self):
         with open(self.state_file, "w") as f:
