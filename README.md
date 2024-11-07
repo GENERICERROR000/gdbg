@@ -106,13 +106,10 @@ export PROMPT="$PROMPT\$(get_bg)"
 
 ### known issues
 
-TODO: can i include this in the build?
-
-if getting the error that the library `libffi.8.dylib` is missing, you can install with `brew` and link to it's expected location.
+when building, if getting the error that the library `libffi.8.dylib` is missing, you can install it with `brew`.
 
 ```sh
 brew install libffi
-ln -sf /opt/homebrew/opt/libffi/lib/libffi.8.dylib /usr/local/lib/
 ```
 
 ## credits
@@ -138,22 +135,18 @@ packages
 
 __(1)__
 
-WARN: WARN: WARN:
-
-`Error setting up client: Can't connect to HTTPS URL because the SSL module is not available.` 
-
-WARN: WARN: WARN:
-
 * [ ] refresh login session id if it fails
   * pydexcom does this here: https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341 
 
+
 __(2)__
 
-* [ ] have final app build to applications dir?
 * [ ] have it start as login item
+* [ ] have final app build to applications dir?
 
 __(3)__
 
+* [ ] will the build work on other computers... or must everyone build it?
 * [ ] linux version
   * [ ] run `dexcom_handler.py` as service
   * [ ] create top bar extension

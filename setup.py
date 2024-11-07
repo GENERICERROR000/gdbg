@@ -9,7 +9,8 @@ OPTIONS = {
         "CFBundleShortVersionString": "0.0.1",
         "LSUIElement": True,
     },
-    "packages": ["imp", "pydexcom", "rumps"]
+    "packages": ["imp", "pydexcom", "rumps"],
+    'frameworks': ['/opt/homebrew/opt/libffi/lib/libffi.8.dylib']
 }
 
 setup(
