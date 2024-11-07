@@ -56,7 +56,6 @@ class GDBG(object):
         self.dexcom = DexcomHandler(dexcom_dir, time_step)
         self.dexcom.set_callback(self.ticker_callback)
 
-    # TODO: move to dexcom_handler???
     def calculate_last_update(self):
         """calculates min/sec since last bg reading"""
         time_diff = datetime.now(timezone.utc) - self.dexcom.datetime
@@ -68,23 +67,14 @@ class GDBG(object):
 
         return f"{formatted_time} minutes ago"
 
-    # TODO: move to dexcom_handler
-    def calculate_delta(self):
-        """calculates change from previous bg"""
-        delta = str(self.dexcom.bg_value - self.dexcom.previous_bg_value)
-        if int(delta) > 0:
-            delta = f"+{delta}"
-
-        return delta
-
     # NOTE: updates menu in-place to avoid memory leak
     # (https://github.com/jaredks/rumps/issues/216#issuecomment-2329613243)
     def update_menu(self):
         """update title with new bg and update delta in menu"""
-        self.app.title = self.dexcom.status
+        self.app.title = self.dexcom.short_status
 
         menu_items = self.app.menu.items()
-        menu_items[0][1].title = self.calculate_delta()
+        menu_items[0][1].title = self.dexcom.delta
 
     def begin_refresh_ticker(self):
         """start ticker in dexcom handler that updates bg"""

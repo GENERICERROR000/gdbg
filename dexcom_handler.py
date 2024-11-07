@@ -70,10 +70,11 @@ class DexcomHandler:
         self.state_color_file = dexcom_dir + "bg_color_status.txt"
 
         self.reading = None
-        self.bg_value = None
-        self.previous_bg_value = None
+        self.bg_value = 0
+        self.previous_bg_value = 0
         self.datetime = None
         self.status = None
+        self.short_status = None
 
         self.login_dexcom()
 
@@ -115,25 +116,29 @@ class DexcomHandler:
 
             self.reading = self.dexcom.get_current_glucose_reading()
 
-    # TODO: make 2 fn's
-    def update_time_and_delta(self):
-        """update the datetime used by the ticker and calculate change from previous bg"""
+    def update_time(self):
+        """update the datetime used by the ticker"""
         self.ticker.datetime = self.reading.datetime
         self.datetime = self.reading.datetime
 
-        if not self.previous_bg_value:
-            self.previous_bg_value = self.reading.value
-        else:
-            self.previous_bg_value = self.bg_value
+    def update_delta(self):
+        self.previous_bg_value = self.bg_value
 
-    def create_status(self):
-        """create status: '[bg] [trend arrow]'"""
-        bg = self.reading
-        value = bg.value
-        arrow = bg.trend_arrow
+        delta = str(self.bg_value - self.previous_bg_value)
+        if int(delta) > 0:
+            delta = f"+{delta}"
 
-        self.bg_value = value
-        self.status = f"{value} {arrow}"
+        self.delta = delta
+
+    def update_current_bg(self):
+        """update current bg value"""
+        self.bg_value = self.reading.value
+
+    def update_data(self):
+        """handler to update the datetime, delta, and current bg value"""
+        self.update_time()
+        self.update_delta()
+        self.update_current_bg()
 
     def write_state(self):
         """write status to file"""
@@ -143,13 +148,23 @@ class DexcomHandler:
         except Exception as error:
             raise Exception("failed to write status file: " + str(error))
 
+    def create_status(self):
+        """create status: '[bg] [trend arrow]'"""
+        bg = self.reading
+        value = bg.value
+        arrow = bg.trend_arrow
+        delta = self.delta
+        timestamp = self.datetime
+
+        self.status = f"{value} {delta} {arrow} '{timestamp}'"
+        self.short_status = f"{value} {arrow}"
+        self.write_state()
+
     def get_reading(self):
         """callback to be used by ticker to get readings"""
         self.get_current_glucose_reading()
-        # TODO: do this differently
-        self.update_time_and_delta()
+        self.update_data()
         self.create_status()
-        self.write_state()
 
     def set_callback(self, callback):
         """fn to set additional callback to be run by ticker every `interval`"""
