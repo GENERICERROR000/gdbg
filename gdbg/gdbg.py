@@ -4,7 +4,6 @@ import rumps
 import sys
 from datetime import datetime, timezone
 from dexcom_handler import DexcomHandler
-from threading import Thread
 
 
 logging.basicConfig(
@@ -20,10 +19,13 @@ class GDBG(object):
 
     def __init__(self, dexcom_dir, time_step):
         self.app = rumps.App("gdbg")
-        self.update_timer = rumps.Timer(self.update_time_callback, 1)
 
         self.setup_menu()
         self.setup_dexcom(dexcom_dir, time_step)
+
+        # use rumps ticker instead of DexcomHandler's to avoid issues when computer sleeps
+        self.ticker = rumps.Timer(self.dexcom.ticker.ticker_exec, time_step)
+        self.update_timer = rumps.Timer(self.update_time_callback, 1)
 
     def update_time_callback(self, _):
         """callback used by app timer to update time since last reading in app menu"""
@@ -83,6 +85,8 @@ class GDBG(object):
     def start(self):
         """start rumps app"""
         log.info("starting app: " + self.app.name)
+
+        self.ticker.start()
         self.update_timer.start()
         self.app.run()
 
@@ -92,9 +96,6 @@ if __name__ == "__main__":
 
     try:
         app = GDBG(dexcom_dir=dexcom_dir, time_step=5)
-        ticker_thread = Thread(target=app.begin_refresh_ticker, daemon=True)
-
-        ticker_thread.start()
         app.start()
     except Exception as error:
         log.error("error running app", str(error))

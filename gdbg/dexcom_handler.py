@@ -22,7 +22,8 @@ class Ticker:
         """set a callback to be run by the ticker fn every `interval`"""
         self.callback = callback
 
-    def ticker_exec(self):
+    # second arg is incase using an outside timer that passes arg
+    def ticker_exec(self, _=None):
         """
         fn that checks every `time_step` if interval has been reached.
 
