@@ -67,7 +67,7 @@ conda activate gdbg
 pip install --no-cache-dir -r requirements.txt
 
 # (3) build app
-python setup.py py2app
+python setup.py py2app -A
 ```
 
 ### add to macos login items
@@ -106,15 +106,13 @@ export PROMPT="$PROMPT\$(get_bg)"
 
 ### known issues
 
-TODO: note on if using conda installed from brew (it won't work)
+TODO: can i include this in the build?
+
+if getting the error that the library `libffi.8.dylib` is missing, you can install with `brew` and link to it's expected location.
 
 ```sh
-# TODO: note on this...
-# solution if issue with `@rpath/libffi.8.dylib`
+brew install libffi
 ln -sf /opt/homebrew/opt/libffi/lib/libffi.8.dylib /usr/local/lib/
-
-# DEBUG - run built app from terminal to see errors
-dist/gdbg.app/Contents/MacOS/gdbg
 ```
 
 ## credits

@@ -27,7 +27,7 @@ class Ticker:
                 self.callback()
 
             timestamp = self.datetime
-            future_datetime = timestamp + timedelta(seconds=320)  # Add 5:20 min
+            future_datetime = timestamp + timedelta(seconds=320) # Add 5:20 min
             interval = (future_datetime - datetime.now(timezone.utc)).seconds
 
             # if time has passed, try again every minute
@@ -96,7 +96,7 @@ class DexcomHandler:
         self.status = f"{value} {arrow}"
 
     def write_state(self):
-        with open(self.state_file, "w") as f:
+        with open(self.state_file, "w", encoding='utf-8') as f:
             f.write(self.status)
 
     def get_reading(self):

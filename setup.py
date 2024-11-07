@@ -9,9 +9,7 @@ OPTIONS = {
         "CFBundleShortVersionString": "0.0.1",
         "LSUIElement": True,
     },
-    "packages": ["imp", "pydexcom", "rumps"],
-    # https://github.com/jawah/charset_normalizer/issues/253#issuecomment-1821092802
-    "includes": ["charset_normalizer.md__mypyc"],
+    "packages": ["imp", "pydexcom", "rumps"]
 }
 
 setup(
