@@ -76,7 +76,25 @@ class DexcomHandler:
             self.reading = "ERROR"
 
     def get_current_glucose_reading(self):
-        self.reading = self.dexcom.get_current_glucose_reading()
+        """
+        get current glucose reading
+        
+        catches one instance of a thrown `pydexcom.errors.SessionError` if session id
+        expired, and attempts to get a new session id and retries
+
+        (https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341)
+        """
+        try:
+            # check if session is still valid
+            self.dexcom._validate_session_id()
+
+            self.reading = self.dexcom.get_current_glucose_reading()
+        except Dexcom.errors.SessionError:
+            # attempt to update expired session id
+            self.dexcom._session()
+
+            self.reading = self.dexcom.get_current_glucose_reading()
+
 
     def update_time_and_delta(self):
         self.ticker.datetime = self.reading.datetime

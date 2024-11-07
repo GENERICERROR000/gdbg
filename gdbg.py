@@ -14,6 +14,7 @@ class GDBG(object):
         self.setup_dexcom(dexcom_dir, time_step)
 
     def update_time_callback(self, _):
+        """TODO: add fn comments to all fn's"""
         if self.dexcom.datetime:
             menu_items = self.app.menu.items()
             menu_items[1][1].title = self.calculate_last_update()
@@ -42,6 +43,7 @@ class GDBG(object):
         self.dexcom.get_reading()
         self.update_menu()
 
+    # TODO: move to dexcom_handler
     def calculate_last_update(self):
         time_diff = datetime.now(timezone.utc) - self.dexcom.datetime
         total_seconds = time_diff.total_seconds()
@@ -52,6 +54,7 @@ class GDBG(object):
 
         return f"{formatted_time} minutes ago"
 
+    # TODO: move to dexcom_handler
     def calculate_delta(self):
         delta = str(self.dexcom.bg_value - self.dexcom.previous_bg_value)
         if int(delta) > 0:
@@ -59,8 +62,8 @@ class GDBG(object):
 
         return delta
 
-    # NOTE: update menu in-place to avoid memory leak
-    # https://github.com/jaredks/rumps/issues/216#issuecomment-2329613243
+    # NOTE: updates menu in-place to avoid memory leak
+    # (https://github.com/jaredks/rumps/issues/216#issuecomment-2329613243)
     def update_menu(self):
         self.app.title = self.dexcom.status
 

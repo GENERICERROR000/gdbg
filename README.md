@@ -135,18 +135,23 @@ packages
 
 __(1)__
 
-* [ ] refresh login session id if it fails
-  * pydexcom does this here: https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341 
-
+* [ ] proper error handling
+* [ ] add fn comments to all fn's
+* [ ] docs for how to have it start as login item
 
 __(2)__
 
-* [ ] have it start as login item
-* [ ] have final app build to applications dir?
+* [ ] how to pass last update to js extension?
+  * [ ] write delta to file? (this one makes sense)
+  * [ ] write last timestamp to file so can use in js to calculate?
 
 __(3)__
 
 * [ ] will the build work on other computers... or must everyone build it?
+  * [ ] if it does, write install instructions and then move part of how to use to build instructions
+
+__(4)__
+
 * [ ] linux version
   * [ ] run `dexcom_handler.py` as service
-  * [ ] create top bar extension
+  * [ ] create gnome top bar extension
