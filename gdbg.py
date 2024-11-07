@@ -1,8 +1,18 @@
+import logging
 import os
 import rumps
+import sys
 from datetime import datetime, timezone
 from dexcom_handler import DexcomHandler
 from threading import Thread
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+log = logging.getLogger(__name__)
 
 
 class GDBG(object):
@@ -46,7 +56,7 @@ class GDBG(object):
         self.dexcom = DexcomHandler(dexcom_dir, time_step)
         self.dexcom.set_callback(self.ticker_callback)
 
-    # TODO: move to dexcom_handler?
+    # TODO: move to dexcom_handler???
     def calculate_last_update(self):
         """calculates min/sec since last bg reading"""
         time_diff = datetime.now(timezone.utc) - self.dexcom.datetime
@@ -82,6 +92,7 @@ class GDBG(object):
 
     def start(self):
         """start rumps app"""
+        log.info("starting app: " + self.app.name)
         self.update_timer.start()
         self.app.run()
 
@@ -89,8 +100,12 @@ class GDBG(object):
 if __name__ == "__main__":
     dexcom_dir = os.path.expanduser("~") + "/.dexcom/"
 
-    app = GDBG(dexcom_dir=dexcom_dir, time_step=5)
-    ticker_thread = Thread(target=app.begin_refresh_ticker, daemon=True)
+    try:
+        app = GDBG(dexcom_dir=dexcom_dir, time_step=5)
+        ticker_thread = Thread(target=app.begin_refresh_ticker, daemon=True)
 
-    ticker_thread.start()
-    app.start()
+        ticker_thread.start()
+        app.start()
+    except Exception as error:
+        log.error("error running app", str(error))
+        sys.exit(1)

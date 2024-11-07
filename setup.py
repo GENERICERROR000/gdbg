@@ -6,11 +6,10 @@ OPTIONS = {
     "argv_emulation": True,
     "iconfile": "assets/gdbg_logo.icns",
     "plist": {
-        "CFBundleShortVersionString": "0.0.1",
+        "CFBundleShortVersionString": "0.1.0",
         "LSUIElement": True,
     },
-    "packages": ["imp", "pydexcom", "rumps"],
-    'frameworks': ['/opt/homebrew/opt/libffi/lib/libffi.8.dylib']
+    "frameworks": ["/opt/homebrew/opt/libffi/lib/libffi.8.dylib"],
 }
 
 setup(

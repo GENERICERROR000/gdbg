@@ -1,4 +1,5 @@
 import json
+import sys
 import time
 from datetime import datetime, timedelta, timezone
 from pydexcom import Dexcom
@@ -59,7 +60,7 @@ class Ticker:
 
 
 class DexcomHandler:
-    """class to manage using `pydexcom` package"""
+    """class to manage using `pydexcom`"""
 
     def __init__(self, dexcom_dir, time_step):
         self.ticker = Ticker(self.get_reading, time_step)
@@ -78,8 +79,11 @@ class DexcomHandler:
 
     def load_credentials(self, path):
         """load credentials from json for dexcom"""
-        with open(path, "r") as f:
-            return json.load(f)
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except Exception as error:
+            raise Exception("unable to load credentials: " + str(error))
 
     def login_dexcom(self):
         """use loaded credentials to login to dexcom"""
@@ -89,9 +93,8 @@ class DexcomHandler:
             self.dexcom = Dexcom(
                 username=credentials["username"], password=credentials["password"]
             )
-        except Exception as e:
-            # TODO: actually handle (this will just break app)
-            self.reading = "ERROR"
+        except Exception as error:
+            raise Exception("failed to login into dexcom: " + str(error))
 
     def get_current_glucose_reading(self):
         """
@@ -134,12 +137,16 @@ class DexcomHandler:
 
     def write_state(self):
         """write status to file"""
-        with open(self.state_file, "w", encoding="utf-8") as f:
-            f.write(self.status)
+        try:
+            with open(self.state_file, "w", encoding="utf-8") as f:
+                f.write(self.status)
+        except Exception as error:
+            raise Exception("failed to write status file: " + str(error))
 
     def get_reading(self):
         """callback to be used by ticker to get readings"""
         self.get_current_glucose_reading()
+        # TODO: do this differently
         self.update_time_and_delta()
         self.create_status()
         self.write_state()
