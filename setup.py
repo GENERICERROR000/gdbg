@@ -1,6 +1,6 @@
 from setuptools import setup
 
-APP = ["gdbg.py"]
+APP = ["gdbg/gdbg.py"]
 DATA_FILES = []
 OPTIONS = {
     "argv_emulation": True,

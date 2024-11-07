@@ -139,11 +139,6 @@ packages
 
 __(1)__
 
-* [ ] move gdbg and dexcom handler to gdbg/ dir and change setup.py to reflect this
-  * [ ] __init__.py (yea?)
-
-__(2)__
-
 * [ ] linux version
   * [ ] run `dexcom_handler.py` as service
   * [ ] create gnome top bar extension
