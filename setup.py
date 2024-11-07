@@ -6,7 +6,7 @@ OPTIONS = {
     "argv_emulation": True,
     "iconfile": "assets/gdbg_logo.icns",
     "plist": {
-        "CFBundleShortVersionString": "0.1.0",
+        "CFBundleShortVersionString": "1.0.0",
         "LSUIElement": True,
     },
     "frameworks": ["/opt/homebrew/opt/libffi/lib/libffi.8.dylib"],
