@@ -135,11 +135,10 @@ packages
 * [Create a macOS Menu Bar App with Python (Pomodoro Timer) - Camillo Visini](https://camillovisini.com/coding/create-macos-menu-bar-app-pomodoro)
 * [Glucose Readings in a Terminal Prompt - Hart Hoover](https://harthoover.com/glucose-readings-in-a-terminal-prompt/)
 
-## TODO:
-
-__(1)__
+## TODO
 
 * [ ] linux version
   * [ ] run `dexcom_handler.py` as service
   * [ ] create gnome top bar extension
-  * [ ] use timestamp in state file to update time sinc last update
+  * [ ] use timestamp in state file for "last updated"
+  * [ ] update readme
