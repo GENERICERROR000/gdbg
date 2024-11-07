@@ -144,3 +144,4 @@ packages
   * [ ] create gnome top bar extension
   * [ ] use timestamp in state file for "last updated"
   * [ ] update readme
+* [ ] on init, get 2 bg's so can calculate actual delta
