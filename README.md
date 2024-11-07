@@ -137,8 +137,12 @@ packages
 
 ## TODO
 
+* [ ] BUG: issue when computer sleeps
+  * ticker thread may be interrupted and not work
+  * how to have rumps check and manage this?
 * [ ] linux version
   * [ ] run `dexcom_handler.py` as service
   * [ ] create gnome top bar extension
   * [ ] use timestamp in state file for "last updated"
   * [ ] update readme
+* [ ] on init, get 2 bg's so can calculate actual delta
