@@ -13,6 +13,17 @@ class GDBG(object):
         self.setup_menu()
         self.setup_dexcom(dexcom_dir, time_step)
 
+    def update_time_callback(self, _):
+        if self.dexcom.datetime:
+            menu_items = self.app.menu.items()
+            menu_items[1][1].title = self.calculate_last_update()
+    
+    def refresh_callback(self, _):
+        self.get_dexcom_reading()
+
+    def ticker_callback(self):
+        self.get_dexcom_reading()
+
     def setup_menu(self):
         self.app.title = "--"
         self.app.menu = [
@@ -27,29 +38,10 @@ class GDBG(object):
         self.dexcom = DexcomHandler(dexcom_dir, time_step)
         self.dexcom.set_callback(self.ticker_callback)
 
-    def refresh_callback(self, _):
-        self.get_dexcom_reading()
-
-    def update_time_callback(self, _):
-        if self.dexcom.datetime:
-            self.update_menu()
-
-    def quit_app_callback(self, _):
-        rumps.quit_application()
-
-    def begin_refresh_ticker(self):
-        self.dexcom.run()
-
-    def ticker_callback(self):
-        self.get_dexcom_reading()
-
     def get_dexcom_reading(self):
         self.dexcom.get_reading()
         self.update_menu()
 
-    # TODO: this needs to update every x amount of time
-    # (currently only called when dexcom bg updates... may need another ticker)
-    # (https://camillovisini.com/coding/create-macos-menu-bar-app-pomodoro)
     def calculate_last_update(self):
         time_diff = datetime.now(timezone.utc) - self.dexcom.datetime
         total_seconds = time_diff.total_seconds()
@@ -67,22 +59,16 @@ class GDBG(object):
 
         return delta
 
+    # NOTE: update menu in-place to avoid memory leak
+    # https://github.com/jaredks/rumps/issues/216#issuecomment-2329613243
     def update_menu(self):
         self.app.title = self.dexcom.status
 
-        delta = self.calculate_delta()
-        last_update = self.calculate_last_update()
-        new_menu = [
-            delta,
-            last_update,
-            rumps.separator,
-            rumps.MenuItem(title="Refresh", callback=self.refresh_callback),
-            rumps.separator,
-            rumps.MenuItem(title="Quit", callback=self.quit_app_callback),
-        ]
+        menu_items = self.app.menu.items()
+        menu_items[0][1].title = self.calculate_delta()
 
-        self.app.menu.clear()
-        self.app.menu.update(new_menu)
+    def begin_refresh_ticker(self):
+        self.dexcom.run()
 
     def start(self):
         self.update_timer.start()
