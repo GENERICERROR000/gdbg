@@ -139,9 +139,11 @@ packages
 
 ## TODO
 
-* [ ] linux version
+1. [ ] on init, get 2 bg's so can calculate actual delta
+  * `main` branch is always 0
+  * `gnome_extension` branch is currently shows huge increase on start...
+2. [ ] linux version
   * [ ] run `dexcom_handler.py` as service
   * [ ] create gnome top bar extension
   * [ ] use timestamp in state file for "last updated"
   * [ ] update readme
-* [ ] on init, get 2 bg's so can calculate actual delta

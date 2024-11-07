@@ -123,13 +123,12 @@ class DexcomHandler:
         self.datetime = self.reading.datetime
 
     def update_delta(self):
-        self.previous_bg_value = self.bg_value
-
         delta = str(self.bg_value - self.previous_bg_value)
         if int(delta) > 0:
             delta = f"+{delta}"
 
         self.delta = delta
+        self.previous_bg_value = self.bg_value
 
     def update_current_bg(self):
         """update current bg value"""
@@ -138,8 +137,8 @@ class DexcomHandler:
     def update_data(self):
         """handler to update the datetime, delta, and current bg value"""
         self.update_time()
-        self.update_delta()
         self.update_current_bg()
+        self.update_delta()
 
     def write_state(self):
         """write status to file"""
