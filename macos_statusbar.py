@@ -30,8 +30,15 @@ class MacOSStatusbar(object):
     def update_time_callback(self, _):
         """callback used by app timer to update time since last reading in app menu"""
         if self.dexcom.datetime:
-            menu_items = self.app.menu.items()
-            menu_items[1][1].title = self.calculate_last_update()
+            # menu_items = self.app.menu.items()
+            # menu_items[1][1].title = self.calculate_last_update()
+            self.app.menu = [
+                self.dexcom.delta,
+                self.calculate_last_update(),
+                rumps.separator,
+                rumps.MenuItem(title="Refresh", callback=self.refresh_callback),
+                rumps.separator,
+            ]
 
     def refresh_callback(self, _):
         """callback used by Refresh button in app menu to get new reading and update app menu"""

@@ -141,8 +141,8 @@ packages
 
 __(1)__
 
-* [ ] should fallback check happen every 30, 20, or 10 sec?
-* [ ] show data is stale after 10 ior 15 min?
+* [ ] how to handle stale data?
+  * [ ] show data is stale after 10 ior 15 min?
 
 __(2)__
 

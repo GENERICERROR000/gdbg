@@ -3,7 +3,11 @@ from datetime import datetime, timedelta, timezone
 
 
 class Ticker:
-    """class to create a timer that executes fn every `interval`"""
+    """
+    class to create a timer that executes fn every `interval`
+
+    `ticker_exec` can be used on it's own with an external timer
+    """
 
     def __init__(self, get_reading_callback, time_step):
         self.get_reading = get_reading_callback
@@ -41,8 +45,12 @@ class Ticker:
             future_datetime = timestamp + timedelta(seconds=320)
             interval = (future_datetime - datetime.now(timezone.utc)).seconds
 
-            # if time has passed, but no new reading, try again every minute
-            self.interval = max(60, interval)
+            # TODO:
+            #   - this is where to check for stale data and handle refresh
+            #   - need a way to have bg data shown as stale
+
+            # if time has passed, try again every 15s
+            self.interval = max(15, interval)
             self.count = 0
             self.updating = False
 
