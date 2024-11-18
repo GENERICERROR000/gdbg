@@ -91,7 +91,7 @@ function get_bg() {
 export PROMPT="$PROMPT\$(get_bg)"
 ```
 
-## manually building app
+## manually building macos statusbar app
 
 using [anaconda](https://docs.anaconda.com/anaconda/install/mac-os/#command-line-install) on macos
 
@@ -104,7 +104,7 @@ conda activate gdbg
 pip install --no-cache-dir -r requirements.txt
 
 # (3) build app
-python setup.py py2app -A
+python macos_statusbar/setup.py py2app -A
 
 # (4) run app from terminal to see errors
 dist/gdbg.app/Contents/MacOS/gdbg
@@ -141,8 +141,8 @@ packages
 
 __(1)__
 
-* [ ] on init, get 2 bg's so can calculate actual delta
-  * currently shows huge increase on start...
+* [ ] should fallback check happen every 30, 20, or 10 sec?
+* [ ] show data is stale after 10 ior 15 min?
 
 __(2)__
 

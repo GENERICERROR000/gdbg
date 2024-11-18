@@ -3,7 +3,7 @@ import os
 import rumps
 import sys
 from datetime import datetime, timezone
-from dexcom_handler import DexcomHandler
+from gdbg import GDBG
 
 
 logging.basicConfig(
@@ -14,7 +14,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 
-class GDBG(object):
+class MacOSStatusbar(object):
     """class to create rumps app and using dexcom handler"""
 
     def __init__(self, dexcom_dir, time_step):
@@ -23,7 +23,7 @@ class GDBG(object):
         self.setup_menu()
         self.setup_dexcom(dexcom_dir, time_step)
 
-        # use rumps ticker instead of DexcomHandler's to avoid issues when computer sleeps
+        # use rumps ticker instead of GDBG's to avoid issues when computer sleeps
         self.ticker = rumps.Timer(self.dexcom.ticker.ticker_exec, time_step)
         self.update_timer = rumps.Timer(self.update_time_callback, 1)
 
@@ -55,7 +55,7 @@ class GDBG(object):
 
     def setup_dexcom(self, dexcom_dir, time_step):
         """initialize dexcom"""
-        self.dexcom = DexcomHandler(dexcom_dir, time_step)
+        self.dexcom = GDBG(dexcom_dir, time_step)
         self.dexcom.set_callback(self.ticker_callback)
 
     def calculate_last_update(self):
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     dexcom_dir = os.path.expanduser("~") + "/.dexcom/"
 
     try:
-        app = GDBG(dexcom_dir=dexcom_dir, time_step=5)
+        app = MacOSStatusbar(dexcom_dir=dexcom_dir, time_step=5)
         app.start()
     except Exception as error:
         log.error("error running app", str(error))

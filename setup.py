@@ -1,6 +1,6 @@
 from setuptools import setup
 
-APP = ["gdbg/gdbg.py"]
+APP = ["macos_statusbar.py"]
 DATA_FILES = []
 OPTIONS = {
     "argv_emulation": True,
