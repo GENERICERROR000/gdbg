@@ -11,16 +11,9 @@
 
 > gdbg: *get dexcom blood glucose*
 
-a python app that displays blood glucose in the macos menu bar. retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library. it also writes the blood glucose and trend arrow to a state file that can be used for displaying data in your terminal (or anything else you want).
+a python service that displays retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library and writes it (and other info) to state file. the state file can then be used for displaying data in your terminal (or anything else you want).
 
 this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). this is a *fantastic* app i and would recommend for people who want a seamless app experience. i wanted to be able to access the blood glucose data outside of the app for other uses.
-
-<img 
-  title="menu bar app in use"
-  alt="screenshot of menu bar app in use"
-  src="assets/menu_bar.png" 
-  width=500
-/>
 
 <img 
   title="blood sugar in terminal prompt"
@@ -31,9 +24,15 @@ this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-m
 
 ## how to use
 
-1. download zip from [releases](https://github.com/GENERICERROR000/gdbg/releases)
+1. clone repo
 
-2. unzip and move to `Applications folder`
+TODO: does it need a py env?
+
+2. install requirements
+
+```sh
+pip install -r requirements.txt
+```
 
 3. setup credentials
 
@@ -48,7 +47,11 @@ this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-m
 }
 ```
 
-4. run app or add it to your login items on mac
+4. run via terminal or add as a service
+
+```sh
+python gdbg.py
+```
 
 ## blood glucose state file
 
@@ -128,30 +131,10 @@ assets
 packages
 
 * [gagebenne/pydexacom](https://github.com/gagebenne/pydexcom)
-* [jaredks/rumps](https://github.com/jaredks/rumps)
-* [dante-biase/py2app](https://github.com/dante-biase/py2app)
+
 
 ## references
 
 * [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main)
-* [Create a macOS Menu Bar App with Python (Pomodoro Timer) - Camillo Visini](https://camillovisini.com/coding/create-macos-menu-bar-app-pomodoro)
+(https://camillovisini.com/coding/create-macos-menu-bar-app-pomodoro)
 * [Glucose Readings in a Terminal Prompt - Hart Hoover](https://harthoover.com/glucose-readings-in-a-terminal-prompt/)
-
-## TODO
-
-__(1)__
-
-* [ ] how to handle stale data?
-  * [ ] show data is stale after 10 ior 15 min?
-* [ ] last reading change if stalled
-  * don't use if older than 10?
-  * then always call for 2
-
-
-__(2)__
-
-* [ ] linux version (branch:`gnome_extension`)
-  * [ ] create `gdbg_service.py` to run as service
-  * [ ] create gnome top bar extension
-  * [ ] use timestamp in state file for "last updated"
-  * [ ] update readme
