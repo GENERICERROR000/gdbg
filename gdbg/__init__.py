@@ -54,13 +54,19 @@ class GDBG:
         try:
             # check if session is still valid
             self.dexcom._validate_session_id()
-
-            self.reading = self.dexcom.get_current_glucose_reading()
         except Dexcom.errors.SessionError:
             # attempt to update expired session id
             self.dexcom._session()
 
-            self.reading = self.dexcom.get_current_glucose_reading()
+        reading = self.dexcom.get_current_glucose_reading()
+
+        if reading:
+            self.reading = reading
+        else:
+            # None
+            # TODO: set a flag to say that it has gone stale
+            # TODO: time for state?
+            self.reading = reading
 
     def update_time(self):
         """update the datetime used by the ticker"""

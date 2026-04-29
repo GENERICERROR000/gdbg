@@ -13,7 +13,7 @@
 
 a python app that displays blood glucose in the macos menu bar. retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library. it also writes the blood glucose and trend arrow to a state file that can be used for displaying data in your terminal (or anything else you want).
 
-this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). this is a *fantastic* app and would recommend for people who want a seamless app experience. i wanted to be able to access the blood glucose data outside of the app for other uses.
+this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). this is a *fantastic* app i and would recommend for people who want a seamless app experience. i wanted to be able to access the blood glucose data outside of the app for other uses.
 
 <img 
   title="menu bar app in use"
@@ -104,7 +104,7 @@ conda activate gdbg
 pip install --no-cache-dir -r requirements.txt
 
 # (3) build app
-python macos_statusbar/setup.py py2app -A
+python setup.py py2app -A
 
 # (4) run app from terminal to see errors
 dist/gdbg.app/Contents/MacOS/gdbg
@@ -143,11 +143,15 @@ __(1)__
 
 * [ ] how to handle stale data?
   * [ ] show data is stale after 10 ior 15 min?
+* [ ] last reading change if stalled
+  * don't use if older than 10?
+  * then always call for 2
+
 
 __(2)__
 
 * [ ] linux version (branch:`gnome_extension`)
-  * [ ] run `dexcom_handler.py` as service
+  * [ ] create `gdbg_service.py` to run as service
   * [ ] create gnome top bar extension
   * [ ] use timestamp in state file for "last updated"
   * [ ] update readme
