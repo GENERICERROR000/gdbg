@@ -6,22 +6,36 @@ from .ticker import Ticker
 class GDBG:
     """class to manage data from Dexcom using `pydexcom`"""
 
-    def __init__(self, dexcom_dir, time_step):
-        self.ticker = Ticker(self.get_reading, time_step)
+    def __init__(self, dexcom_dir, time_step, callback, write_state=False):
+        ## initialize Ticker
+        self.ticker = Ticker(time_step, self.get_reading, callback)
 
-        self.credentials = self.load_credentials(dexcom_dir + "dexcom_credentials.json")
         self.state_file = dexcom_dir + "bg_status.txt"
         self.state_color_file = dexcom_dir + "bg_color_status.txt"
+        self.credentials_file = dexcom_dir + "dexcom_credentials.json"
+        self.credentials = self.load_credentials(self.credentials_file)
 
+        self.initialized = False
         self.reading = None
         self.bg_value = 0
         self.previous_bg_value = 0
+        self.delta = 0
         self.datetime = None
+        self.is_reading_stale = False
+
+        self.write_state = write_state
         self.status = None
         self.short_status = None
-        self.initialized = False
 
         self.login_dexcom()
+
+    def get_reading(self):
+        """`internal_callback' to be used by Ticker to get readings"""
+        self.get_current_glucose_reading()
+        self.update_data()
+
+        if self.write_state:
+            self.create_status()
 
     def load_credentials(self, path):
         """load credentials from json for dexcom"""
@@ -58,20 +72,37 @@ class GDBG:
             # attempt to update expired session id
             self.dexcom._session()
 
+        ## current available glucose reading, within the last 10 minutes
         reading = self.dexcom.get_current_glucose_reading()
 
         if reading:
+            self.is_reading_stale = False
             self.reading = reading
         else:
-            # None
-            # TODO: set a flag to say that it has gone stale
-            # TODO: time for state?
-            self.reading = reading
+            self.is_reading_stale = True
 
-    def update_time(self):
-        """update the datetime used by the ticker"""
-        self.ticker.datetime = self.reading.datetime
+    def update_data(self):
+        """handler to update the datetime, delta, and current bg value"""
+        if self.is_reading_stale:
+            self.update_stale_bg()
+            self.delta = 0
+        else:
+            self.update_datetime()
+            self.update_current_bg()
+            self.update_delta()
+
+    def update_datetime(self):
+        """update the datetime used by Ticker"""
+        self.ticker.set_datetime(self.reading.datetime)
         self.datetime = self.reading.datetime
+
+    def update_stale_bg(self):
+        """update current bg value to reflect stale data"""
+        self.bg_value = "-⏲-"
+
+    def update_current_bg(self):
+        """update current bg value"""
+        self.bg_value = self.reading.value
 
     def update_delta(self):
         if self.initialized:
@@ -85,24 +116,6 @@ class GDBG:
         self.delta = delta
         self.previous_bg_value = self.bg_value
 
-    def update_current_bg(self):
-        """update current bg value"""
-        self.bg_value = self.reading.value
-
-    def update_data(self):
-        """handler to update the datetime, delta, and current bg value"""
-        self.update_time()
-        self.update_current_bg()
-        self.update_delta()
-
-    def write_state(self):
-        """write status to file"""
-        try:
-            with open(self.state_file, "w", encoding="utf-8") as f:
-                f.write(self.status)
-        except Exception as error:
-            raise Exception("failed to write status file: " + str(error))
-
     def create_status(self):
         """create status: '[bg] [trend arrow]'"""
         bg = self.reading
@@ -115,15 +128,13 @@ class GDBG:
         self.short_status = f"{value} {arrow}"
         self.write_state()
 
-    def get_reading(self):
-        """callback to be used by ticker to get readings"""
-        self.get_current_glucose_reading()
-        self.update_data()
-        self.create_status()
-
-    def set_callback(self, callback):
-        """fn to set additional callback to be run by ticker every `interval`"""
-        self.ticker.set_callback(callback)
+    def write_state(self):
+        """write status to file"""
+        try:
+            with open(self.state_file, "w", encoding="utf-8") as f:
+                f.write(self.status)
+        except Exception as error:
+            raise Exception("failed to write status file: " + str(error))
 
     def start(self):
         """start ticker that updates dexcom reading every `interval`"""
