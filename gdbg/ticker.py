@@ -3,19 +3,6 @@ import time
 
 from datetime import datetime, timedelta, timezone
 
-# TODO:
-# * HERE (still issue?)
-#   * this is where to check for stale data and handle refresh
-#   * need a way to have bg data shown as stale
-# * new thing though:
-#   * try to grab
-#   * if good, see you in 5:20
-#   * if not, retry 15 seconds later
-#   * if not, retry 30 seconds later
-#   * if not, retry 60 seconds later
-#   * if not, go back to every 5 min (need to preserve previous time then)
-#   * (is this where to flip switch saying stale?)
-#   *
 
 _log = logging.getLogger(__name__)
 
@@ -29,7 +16,7 @@ class Ticker:
     class to create a timer that executes `callback` every `interval`
 
     * `ticker_exec`: can be used on it's own with an external timer
-    * `datetime`: must be set in the `internal_callback` or `callback`
+    * WARN: `datetime`: must be set/updated by `internal_callback` or `callback`
         * used for calculating time passed and retries after 15 minutes
     """
 
@@ -50,6 +37,9 @@ class Ticker:
         self.interval = 0
         self.count = 0
         self.updating = False
+        self.is_reading_stale = False
+        self.backoff = 15
+        self.skip_backoff = False
 
         self.datetime = None
 
@@ -73,27 +63,57 @@ class Ticker:
 
             log(f"{self.count} (count) >= {self.interval} (interval)")
 
-            ## HERE:
-            self.internal_callback()
+            if self.internal_callback:
+                log("internal_callback")
+                self.internal_callback()
 
             if self.callback:
-                self.callback()
+                log("callback")
+                self.is_reading_stale = self.callback()
 
-            timestamp = self.datetime
-            # add 5:20 min
-            future_datetime = timestamp + timedelta(seconds=320)
-            interval = (future_datetime - datetime.now(timezone.utc)).seconds
+            # if self.is_reading_stale and not self.skip_backoff:
+            if self.is_reading_stale:
+                if self.skip_backoff:
+                    log("Skipping retries, check every 5 minutes")
+                    future_datetime = datetime.now(timezone.utc) + timedelta(
+                        seconds=300
+                    )
+                else:
+                    log(f"retrying in approximately {self.backoff} seconds...")
+                    future_datetime = datetime.now(timezone.utc) + timedelta(
+                        seconds=self.backoff
+                    )
 
-            # HERE: old spot, if use new one, then time stuff happens before moving on to callback...
+                    self.backoff *= 2
 
-            # if time has passed, try again every 15s
-            self.interval = max(15, interval)
+                    if self.backoff > 60:
+                        log(
+                            "Retried 3 times, skipping backoff and retrying ever 5 minutes"
+                        )
+                        self.skip_backoff = True
+                        self.backoff = 15
+
+            else:
+                timestamp = self.datetime
+
+                ## add 5:20 min
+                future_datetime = timestamp + timedelta(seconds=320)
+                interval = (future_datetime - datetime.now(timezone.utc)).seconds
+
+                ## set interval to minimum of 60 seconds
+                self.interval = max(60, interval)
+
+                ## reset check
+                if self.skip_backoff:
+                    self.skip_backoff = False
+
             self.count = 0
             self.updating = False
 
     def start(self):
         """start the ticker loop"""
         log(f"Starting loop with time_step of: {self.time_step} seconds")
+
         while True:
             time.sleep(self.time_step)
             self.ticker_exec()

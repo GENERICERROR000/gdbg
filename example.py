@@ -8,6 +8,8 @@ from gdbg import GDBG
 # TODO:
 # * error handling everywhere
 # * debug logging and better logging
+# * finish commenting code
+# tests...
 
 logging.basicConfig(
     level=logging.INFO,
@@ -59,5 +61,5 @@ if __name__ == "__main__":
         app = CGM_Service(dexcom_dir=dexcom_dir, time_step=5)
         app.start()
     except Exception as error:
-        log.error("error running app", str(error))
+        log.error("error running CGM Service", str(error))
         sys.exit(1)

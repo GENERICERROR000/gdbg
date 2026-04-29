@@ -1,6 +1,14 @@
+import logging
 import json
+
 from pydexcom import Dexcom
 from .ticker import Ticker
+
+_log = logging.getLogger(__name__)
+
+
+def log(msg):
+    _log.info("GDBG | " + msg)
 
 
 class GDBG:
@@ -37,6 +45,8 @@ class GDBG:
         if self.write_state:
             self.create_status()
 
+        return self.is_reading_stale
+
     def load_credentials(self, path):
         """load credentials from json for dexcom"""
         try:
@@ -65,6 +75,8 @@ class GDBG:
         (https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341)
         """
 
+        log("Authenticating with Dexcom...")
+
         try:
             # check if session is still valid
             self.dexcom._validate_session_id()
@@ -72,13 +84,19 @@ class GDBG:
             # attempt to update expired session id
             self.dexcom._session()
 
+        log("Requesting current available reading, within the last 10 minutes...")
+
         ## current available glucose reading, within the last 10 minutes
         reading = self.dexcom.get_current_glucose_reading()
 
         if reading:
+            log("Reading is new")
+            log("/n" + reading + "/n")
             self.is_reading_stale = False
             self.reading = reading
         else:
+            log("Reading is stale")
+            log("\n---\n")
             self.is_reading_stale = True
 
     def update_data(self):
@@ -98,7 +116,7 @@ class GDBG:
 
     def update_stale_bg(self):
         """update current bg value to reflect stale data"""
-        self.bg_value = "-⏲-"
+        self.bg_value = "---"
 
     def update_current_bg(self):
         """update current bg value"""
@@ -133,9 +151,14 @@ class GDBG:
         try:
             with open(self.state_file, "w", encoding="utf-8") as f:
                 f.write(self.status)
+
+            log(f"Status: {self.status}")
+            log(f"State file updated: {self.state_file}")
+
         except Exception as error:
             raise Exception("failed to write status file: " + str(error))
 
     def start(self):
         """start ticker that updates dexcom reading every `interval`"""
+        log("Starting Ticker")
         self.ticker.start()
