@@ -7,17 +7,21 @@ from gdbg import GDBG
 
 # TODO:
 # * error handling everywhere
-# * debug logging and better logging
 # * finish commenting code
-# tests...
+# * tests...
 
 logging.basicConfig(
-    level=logging.INFO,
+    # level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s | %(levelname)s | %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
+
+
+def log(msg):
+    _log.info(f"[ Main ] {msg}")
 
 
 class CGM_Service:
@@ -32,7 +36,9 @@ class CGM_Service:
 
     def cgm_service_callback(self):
         """called when new data is retrieved"""
-        print(self.dexcom.reading)
+        print("")
+        print(f"[ service ] new status: {self.dexcom.status}")
+        print("")
 
     # def calculate_last_update(self):
     #     """calculates min/sec since last bg reading"""
@@ -47,19 +53,21 @@ class CGM_Service:
 
     def start(self):
         """start app and ticker in dexcom handler that updates bg"""
-        log.info("Starting CGM Service")
-        log.info("  Dexcom Directory: " + self.dexcom)
-        log.info("  Time-Step: " + self.time_step)
+        log("Starting CGM Service")
+        log(f"\tDexcom Directory: {self.dexcom_dir}")
+        log(f"\tTime-Step: {self.time_step}")
 
         self.dexcom.start()
 
 
 if __name__ == "__main__":
-    dexcom_dir = os.path.expanduser("~") + "/.dexcom/"
+    dexcom_dir = f"{os.path.expanduser("~")}/.dexcom/"
 
     try:
-        app = CGM_Service(dexcom_dir=dexcom_dir, time_step=5)
+        # app = CGM_Service(dexcom_dir=dexcom_dir, time_step=5)
+        app = CGM_Service(dexcom_dir=dexcom_dir, time_step=10)
         app.start()
+
     except Exception as error:
-        log.error("error running CGM Service", str(error))
+        _log.error("error running CGM Service", str(error))
         sys.exit(1)

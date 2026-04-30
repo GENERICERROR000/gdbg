@@ -8,7 +8,11 @@ _log = logging.getLogger(__name__)
 
 
 def log(msg):
-    _log.info("Ticker | " + msg)
+    _log.info(f"[ Ticker ] {msg}")
+
+
+def debug(msg):
+    _log.debug(f"[ Ticker ] {msg}")
 
 
 class Ticker:
@@ -46,8 +50,14 @@ class Ticker:
     def set_datetime(self, datetime):
         """
         set datetime
+
+        if reading is the same as the previous one, update time stamp to previous + 5 minutes
         """
-        self.datetime = datetime
+        if self.datetime == datetime:
+            self.datetime = datetime.now(timezone.utc)
+
+        else:
+            self.datetime = datetime
 
     ## second arg is in case using an outside timer that passes arg
     def ticker_exec(self, _=None):
@@ -58,40 +68,47 @@ class Ticker:
         """
         self.count += self.time_step
 
+        debug(f"\t\t\t\t\t{self.count} (count) | {self.interval} (interval)")
+
         if self.count >= self.interval and not self.updating:
             self.updating = True
 
-            log(f"{self.count} (count) >= {self.interval} (interval)")
+            debug(f"{self.count} (count) >= {self.interval} (interval)")
 
             if self.internal_callback:
                 log("internal_callback")
-                self.internal_callback()
+                self.is_reading_stale = self.internal_callback()
 
             if self.callback:
                 log("callback")
-                self.is_reading_stale = self.callback()
+                self.callback()
 
-            # if self.is_reading_stale and not self.skip_backoff:
             if self.is_reading_stale:
+                backoff_seconds = None
+
                 if self.skip_backoff:
-                    log("Skipping retries, check every 5 minutes")
-                    future_datetime = datetime.now(timezone.utc) + timedelta(
-                        seconds=300
-                    )
+                    log("Skipping retries, checking every 5 minutes")
+                    # backoff_seconds = datetime.now(timezone.utc) + timedelta(
+                    #     seconds=300
+                    # )
+                    backoff_seconds = 300
+
                 else:
                     log(f"retrying in approximately {self.backoff} seconds...")
-                    future_datetime = datetime.now(timezone.utc) + timedelta(
-                        seconds=self.backoff
-                    )
+                    # backoff_seconds = datetime.now(timezone.utc) + timedelta(
+                    #     seconds=self.backoff
+                    # )
+                    backoff_seconds = self.backoff
 
                     self.backoff *= 2
 
                     if self.backoff > 60:
-                        log(
-                            "Retried 3 times, skipping backoff and retrying ever 5 minutes"
-                        )
+                        debug("setting skip_backoff = True (tried 3 times)")
                         self.skip_backoff = True
                         self.backoff = 15
+
+                self.interval = backoff_seconds
+                debug(f"new interval:  {self.interval} (seconds)")
 
             else:
                 timestamp = self.datetime
@@ -102,10 +119,15 @@ class Ticker:
 
                 ## set interval to minimum of 60 seconds
                 self.interval = max(60, interval)
+                debug(f"new interval:  {self.interval} (seconds)")
 
                 ## reset check
                 if self.skip_backoff:
                     self.skip_backoff = False
+                    debug(f"reset skip_backoff: {self.skip_backoff}")
+
+                if interval > 1000:
+                    catdog = ""
 
             self.count = 0
             self.updating = False

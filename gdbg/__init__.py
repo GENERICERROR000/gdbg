@@ -8,13 +8,17 @@ _log = logging.getLogger(__name__)
 
 
 def log(msg):
-    _log.info("GDBG | " + msg)
+    _log.info(f"[ GDBG ] {msg}")
+
+
+def debug(msg):
+    _log.debug(f"[ Ticker ] {msg}")
 
 
 class GDBG:
     """class to manage data from Dexcom using `pydexcom`"""
 
-    def __init__(self, dexcom_dir, time_step, callback, write_state=False):
+    def __init__(self, dexcom_dir, time_step, callback, create_state=False):
         ## initialize Ticker
         self.ticker = Ticker(time_step, self.get_reading, callback)
 
@@ -31,7 +35,7 @@ class GDBG:
         self.datetime = None
         self.is_reading_stale = False
 
-        self.write_state = write_state
+        self.create_state = create_state
         self.status = None
         self.short_status = None
 
@@ -41,9 +45,7 @@ class GDBG:
         """`internal_callback' to be used by Ticker to get readings"""
         self.get_current_glucose_reading()
         self.update_data()
-
-        if self.write_state:
-            self.create_status()
+        self.create_status()
 
         return self.is_reading_stale
 
@@ -52,8 +54,9 @@ class GDBG:
         try:
             with open(path, "r") as f:
                 return json.load(f)
+
         except Exception as error:
-            raise Exception("unable to load credentials: " + str(error))
+            raise Exception(f"unable to load credentials: {error}")
 
     def login_dexcom(self):
         """use loaded credentials to login to dexcom"""
@@ -63,8 +66,9 @@ class GDBG:
             self.dexcom = Dexcom(
                 username=credentials["username"], password=credentials["password"]
             )
+
         except Exception as error:
-            raise Exception("failed to login into dexcom: " + str(error))
+            raise Exception(f"failed to login into dexcom: {error}")
 
     def get_current_glucose_reading(self):
         """
@@ -80,6 +84,7 @@ class GDBG:
         try:
             # check if session is still valid
             self.dexcom._validate_session_id()
+
         except Dexcom.errors.SessionError:
             # attempt to update expired session id
             self.dexcom._session()
@@ -90,13 +95,19 @@ class GDBG:
         reading = self.dexcom.get_current_glucose_reading()
 
         if reading:
-            log("Reading is new")
-            log("/n" + reading + "/n")
+            debug(
+                f"""New reading:
+                \t\t\t\t\tvalue: {reading.value}
+                \t\t\t\t\ttrend: {reading.trend}
+                \t\t\t\t\tarrow: {reading.trend_arrow}
+                \t\t\t\t\tdatetime: {reading.datetime}"""
+            )
+
             self.is_reading_stale = False
             self.reading = reading
+
         else:
-            log("Reading is stale")
-            log("\n---\n")
+            debug("Reading is stale \n\t\t\t\t\t\t\t- - -")
             self.is_reading_stale = True
 
     def update_data(self):
@@ -104,6 +115,7 @@ class GDBG:
         if self.is_reading_stale:
             self.update_stale_bg()
             self.delta = 0
+
         else:
             self.update_datetime()
             self.update_current_bg()
@@ -111,8 +123,8 @@ class GDBG:
 
     def update_datetime(self):
         """update the datetime used by Ticker"""
-        self.ticker.set_datetime(self.reading.datetime)
         self.datetime = self.reading.datetime
+        self.ticker.set_datetime(self.datetime)
 
     def update_stale_bg(self):
         """update current bg value to reflect stale data"""
@@ -127,6 +139,7 @@ class GDBG:
             delta = str(self.bg_value - self.previous_bg_value)
             if int(delta) > 0:
                 delta = f"+{delta}"
+
         else:
             delta = 0
             self.initialized = True
@@ -135,16 +148,22 @@ class GDBG:
         self.previous_bg_value = self.bg_value
 
     def create_status(self):
-        """create status: '[bg] [trend arrow]'"""
-        bg = self.reading
-        value = bg.value
-        arrow = bg.trend_arrow
-        delta = self.delta
-        timestamp = self.datetime
+        """create status to be used in cli or elsewhere'"""
+        if self.is_reading_stale:
+            self.status = self.short_status = "- - -"
 
-        self.status = f"{value} {delta} {arrow} '{timestamp}'"
-        self.short_status = f"{value} {arrow}"
-        self.write_state()
+        else:
+            bg = self.reading
+            value = bg.value
+            arrow = bg.trend_arrow
+            delta = self.delta
+            timestamp = self.datetime
+
+            self.status = f"{value} {delta} {arrow} '{timestamp}'"
+            self.short_status = f"{value} {arrow}"
+
+        if self.create_state:
+            self.write_state()
 
     def write_state(self):
         """write status to file"""
@@ -156,7 +175,7 @@ class GDBG:
             log(f"State file updated: {self.state_file}")
 
         except Exception as error:
-            raise Exception("failed to write status file: " + str(error))
+            raise Exception(f"failed to write status file: {error}")
 
     def start(self):
         """start ticker that updates dexcom reading every `interval`"""
