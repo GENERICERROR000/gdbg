@@ -4,8 +4,5 @@
 # illustrator file
 *.ai
 
-# build
-__pycache__
-build
-dist
-.eggs
+# vscode
+.vscode
