@@ -30,6 +30,8 @@ class GDBG:
         self.initialized = False
         self.reading = None
         self.bg_value = 0
+        self.trend = None
+        self.trend_arrow = None
         self.previous_bg_value = 0
         self.delta = 0
         self.datetime = None
@@ -118,7 +120,7 @@ class GDBG:
 
         else:
             self.update_datetime()
-            self.update_current_bg()
+            self.update_current_readings(self.reading)
             self.update_delta()
 
     def update_datetime(self):
@@ -127,12 +129,16 @@ class GDBG:
         self.ticker.set_datetime(self.datetime)
 
     def update_stale_bg(self):
-        """update current bg value to reflect stale data"""
+        """update current values to reflect stale data"""
         self.bg_value = "---"
+        self.trend = None
+        self.trend_arrow = None
 
-    def update_current_bg(self):
-        """update current bg value"""
-        self.bg_value = self.reading.value
+    def update_current_readings(self, reading):
+        """update current values from new reading"""
+        self.bg_value = reading.value
+        self.trend = reading.trend
+        self.trend_arrow = reading.trend_arrow
 
     def update_delta(self):
         if self.initialized:

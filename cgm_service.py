@@ -1,3 +1,7 @@
+# TODO:
+# * error handling
+# * finish commenting code
+# * tests...
 import logging
 import os
 import sys
@@ -5,10 +9,6 @@ import sys
 from datetime import datetime, timezone
 from gdbg import GDBG
 
-# TODO:
-# * error handling everywhere
-# * finish commenting code
-# * tests...
 
 logging.basicConfig(
     # level=logging.INFO,
@@ -27,9 +27,9 @@ def log(msg):
 class CGM_Service:
     """CGM_Service class using GDBG"""
 
-    def __init__(self, dexcom_dir, time_step):
+    def __init__(self, dexcom_provider, dexcom_dir, time_step):
         ## initialize dexcom
-        self.dexcom = GDBG(dexcom_dir, time_step, self.cgm_service_callback)
+        self.dexcom = dexcom_provider(dexcom_dir, time_step, self.cgm_service_callback)
 
         self.dexcom_dir = dexcom_dir
         self.time_step = time_step
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     try:
         # app = CGM_Service(dexcom_dir=dexcom_dir, time_step=5)
-        app = CGM_Service(dexcom_dir=dexcom_dir, time_step=10)
+        app = CGM_Service(GDBG, dexcom_dir=dexcom_dir, time_step=10)
         app.start()
 
     except Exception as error:
