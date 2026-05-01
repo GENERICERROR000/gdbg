@@ -109,7 +109,7 @@ class GDBG:
             self.reading = reading
 
         else:
-            debug("Reading is stale \n\t\t\t\t\t\t\t- - -")
+            debug("Reading is stale \n\t\t\t\t\t\t\t---")
             self.is_reading_stale = True
 
     def update_data(self):
@@ -130,7 +130,7 @@ class GDBG:
 
     def update_stale_bg(self):
         """update current values to reflect stale data"""
-        self.bg_value = "---"
+        self.bg_value = " ---"
         self.trend = None
         self.trend_arrow = None
 
@@ -156,7 +156,7 @@ class GDBG:
     def create_status(self):
         """create status to be used in cli or elsewhere'"""
         if self.is_reading_stale:
-            self.status = self.short_status = "- - -"
+            self.status = self.short_status = "---"
 
         else:
             bg = self.reading
