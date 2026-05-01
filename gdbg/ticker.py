@@ -1,5 +1,7 @@
 import logging
-import time
+import threading
+
+# import time
 
 from datetime import datetime, timedelta, timezone
 
@@ -126,16 +128,16 @@ class Ticker:
                     self.skip_backoff = False
                     debug(f"reset skip_backoff: {self.skip_backoff}")
 
-                if interval > 1000:
-                    catdog = ""
-
             self.count = 0
             self.updating = False
 
     def start(self):
         """start the ticker loop"""
+        event = threading.Event()
+
         log(f"Starting loop with time_step of: {self.time_step} seconds")
 
         while True:
-            time.sleep(self.time_step)
+            event.wait(self.time_step)
+            # time.sleep(self.time_step)
             self.ticker_exec()
