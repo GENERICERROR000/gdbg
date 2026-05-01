@@ -12,7 +12,7 @@ def log(msg):
 
 
 def debug(msg):
-    _log.debug(f"[ Ticker ] {msg}")
+    _log.debug(f"[ GDBG ] {msg}")
 
 
 class GDBG:

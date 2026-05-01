@@ -1,8 +1,6 @@
 import logging
 import threading
 
-# import time
-
 from datetime import datetime, timedelta, timezone
 
 
@@ -139,5 +137,4 @@ class Ticker:
 
         while True:
             event.wait(self.time_step)
-            # time.sleep(self.time_step)
             self.ticker_exec()
