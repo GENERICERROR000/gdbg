@@ -120,7 +120,7 @@ class GDBG:
 
         else:
             self.update_datetime()
-            self.update_current_readings(self.reading)
+            self.update_current_readings()
             self.update_delta()
 
     def update_datetime(self):
@@ -134,11 +134,11 @@ class GDBG:
         self.trend = None
         self.trend_arrow = None
 
-    def update_current_readings(self, reading):
+    def update_current_readings(self):
         """update current values from new reading"""
-        self.bg_value = reading.value
-        self.trend = reading.trend
-        self.trend_arrow = reading.trend_arrow
+        self.bg_value = self.reading.value
+        self.trend = self.reading.trend
+        self.trend_arrow = self.reading.trend_arrow
 
     def update_delta(self):
         if self.initialized:
