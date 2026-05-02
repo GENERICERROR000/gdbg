@@ -47,24 +47,26 @@ class Ticker:
 
         self.datetime = None
 
-    def set_datetime(self, datetime):
+    def set_datetime(self, new_datetime):
         """
-        set datetime
-
-        if reading is the same as the previous one, update time stamp to previous + 5 minutes
+        set datetime to new one from new reading unless it is the same as the previous one,
+        then update time to now
         """
-        if self.datetime == datetime:
+        if self.datetime == new_datetime:
             self.datetime = datetime.now(timezone.utc)
 
         else:
-            self.datetime = datetime
+            self.datetime = new_datetime
 
     ## second arg is in case using an outside timer that passes arg
     def ticker_exec(self, _=None):
         """
-        fn that checks every `time_step` (seconds) if interval has been reached.
+        fn that is run if passed `interval`, then get new reading from dexcom and use callback if set
 
-        if passed interval, get new reading for dexcom and use callback if set.
+        `internal_callback is used by gdbg itself, `callback` is set when initializing gdbg class
+
+        in case of stale reading, try getting data after 15, 30, and 60 seconds. If those fail,
+        fallback to trying every 300 seconds (5min)
         """
         self.count += self.time_step
 
@@ -88,16 +90,10 @@ class Ticker:
 
                 if self.skip_backoff:
                     log("Skipping retries, checking every 5 minutes")
-                    # backoff_seconds = datetime.now(timezone.utc) + timedelta(
-                    #     seconds=300
-                    # )
                     backoff_seconds = 300
 
                 else:
                     log(f"retrying in approximately {self.backoff} seconds...")
-                    # backoff_seconds = datetime.now(timezone.utc) + timedelta(
-                    #     seconds=self.backoff
-                    # )
                     backoff_seconds = self.backoff
 
                     self.backoff *= 2

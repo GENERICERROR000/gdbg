@@ -11,9 +11,9 @@
 
 > gdbg: *get dexcom blood glucose*
 
-a python service that displays retrieves blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library and writes it (and other info) to state file. the state file can then be used for displaying data in your terminal (or anything else you want).
+a python service that retrieves/displays blood glucose from dexcom via the [pydexcom](https://github.com/gagebenne/pydexcom) library and writes it (and other info) to state file. the state file can then be used for displaying data in your terminal (or anything else you want).
 
-this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). this is a *fantastic* app i and would recommend for people who want a seamless app experience. i wanted to be able to access the blood glucose data outside of the app for other uses.
+this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main). this is a *fantastic* app i and would recommend it for people who want a seamless app experience. i wanted to be able to access the blood glucose data outside of the app for other uses.
 
 <img 
   title="blood sugar in terminal prompt"
@@ -26,28 +26,34 @@ this app was inspired by [kylebshr/luka-mini](https://github.com/kylebshr/luka-m
 
 1. clone repo
 
-TODO: does it need a py env?
+2. set up environment
 
-2. install requirements
+```sh
+python3 -m venv gdbg
+
+source gdbg/bin/activate
+```
+   
+3. install requirements
 
 ```sh
 pip install -r requirements.txt
 ```
 
-3. setup credentials
+4. setup credentials
 
 *__this file must be created manually__*
 
-* `~/.dexcom/dexcom_credentials.json`
+`~/.dexcom/dexcom_credentials.json`
 
 ```json
 {
-  "username" : "dexcom_username",
-  "password": "dexcom_password"
+  "username" : "<dexcom_username>",
+  "password": "<dexcom_password>"
 }
 ```
 
-4. run via terminal or add as a service
+5. run via cli
 
 ```sh
 python cgm_service.py
@@ -63,7 +69,7 @@ format of the status is: `[bg] [delta] [trend arrow] '[reading timestamp]'`
 
 the delta starts at 0 and will show change after second reading is retrieved.
 
-### using in zsh $PROMPT
+### example usage in zsh $PROMPT
 
 ```sh
 # ~/.zshrc
@@ -93,6 +99,13 @@ function get_bg() {
 # backslash in `\$(...)` is required for the value to update every time 
 export PROMPT="$PROMPT\$(get_bg)"
 ```
+
+## references
+
+* [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main)
+(https://camillovisini.com/coding/create-macos-menu-bar-app-pomodoro)
+* [Glucose Readings in a Terminal Prompt - Hart Hoover](https://harthoover.com/glucose-readings-in-a-terminal-prompt/)
+
 ## credits
 
 assets
@@ -104,9 +117,12 @@ packages
 
 * [gagebenne/pydexacom](https://github.com/gagebenne/pydexcom)
 
+created by
 
-## references
+* [GENERIC_ERROR](https://generic_error.xyz/)
 
-* [kylebshr/luka-mini](https://github.com/kylebshr/luka-mini/tree/main)
-(https://camillovisini.com/coding/create-macos-menu-bar-app-pomodoro)
-* [Glucose Readings in a Terminal Prompt - Hart Hoover](https://harthoover.com/glucose-readings-in-a-terminal-prompt/)
+-//-
+
+## TODO:
+
+* [ ] testing

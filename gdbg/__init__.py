@@ -76,9 +76,9 @@ class GDBG:
         """
         get current glucose reading
 
-        catches one instance of a thrown `pydexcom.errors.SessionError` if session id expired, and attempts to get a new session id and retries
+        catches one instance of a thrown `pydexcom.errors.SessionError` if session id expired, and attempts to get a new session id and retries (https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341)
 
-        (https://github.com/gagebenne/pydexcom/blob/9bd35b2597513ba6e13ce4e3211a0e8f6517cf33/pydexcom/__init__.py#L341)
+        reading are considered stale if no reading is returned by the api (pydexom fn `get_current_glucose_reading` returns None for this)
         """
 
         log("Authenticating with Dexcom...")
@@ -130,7 +130,7 @@ class GDBG:
 
     def update_stale_bg(self):
         """update current values to reflect stale data"""
-        self.bg_value = " ---"
+        self.bg_value = "---"
         self.trend = None
         self.trend_arrow = None
 
@@ -141,6 +141,7 @@ class GDBG:
         self.trend_arrow = self.reading.trend_arrow
 
     def update_delta(self):
+        """update change in reading value"""
         if self.initialized:
             delta = str(self.bg_value - self.previous_bg_value)
             if int(delta) > 0:
@@ -168,6 +169,7 @@ class GDBG:
             self.status = f"{value} {delta} {arrow} '{timestamp}'"
             self.short_status = f"{value} {arrow}"
 
+        ## write to state file if enabled
         if self.create_state:
             self.write_state()
 

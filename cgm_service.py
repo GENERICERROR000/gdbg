@@ -1,7 +1,7 @@
-# TODO:
-# * error handling
-# * finish commenting code
-# * tests...
+"""
+example usage of GDBG
+"""
+
 import logging
 import os
 import sys
@@ -11,8 +11,8 @@ from gdbg import GDBG
 
 
 logging.basicConfig(
-    # level=logging.INFO,
-    level=logging.DEBUG,
+    # level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
@@ -29,27 +29,28 @@ class CGM_Service:
 
     def __init__(self, dexcom_provider, dexcom_dir, time_step):
         ## initialize dexcom
-        self.dexcom = dexcom_provider(dexcom_dir, time_step, self.cgm_service_callback)
-
         self.dexcom_dir = dexcom_dir
         self.time_step = time_step
 
+        self.dexcom = dexcom_provider(
+            self.dexcom_dir, self.time_step, self.cgm_service_callback
+        )
+
     def cgm_service_callback(self):
         """called when new data is retrieved"""
-        print("")
-        print(f"[ service ] new status: {self.dexcom.status}")
-        print("")
+        log(f"new status: {self.dexcom.status}")
+        log(f"last update was {self.calculate_last_update()}")
 
-    # def calculate_last_update(self):
-    #     """calculates min/sec since last bg reading"""
-    #     time_diff = datetime.now(timezone.utc) - self.dexcom.datetime
-    #     total_seconds = time_diff.total_seconds()
+    def calculate_last_update(self):
+        """calculates min/sec since last bg reading"""
+        time_diff = datetime.now(timezone.utc) - self.dexcom.datetime
+        total_seconds = time_diff.total_seconds()
 
-    #     minutes = int(total_seconds // 60)
-    #     seconds = int(total_seconds % 60)
-    #     formatted_time = f"{minutes:02d}:{seconds:02d}"
+        minutes = int(total_seconds // 60)
+        seconds = int(total_seconds % 60)
+        formatted_time = f"{minutes:02d}:{seconds:02d}"
 
-    #     return f"{formatted_time} minutes ago"
+        return f"{formatted_time} minutes ago"
 
     def start(self):
         """start app and ticker in dexcom handler that updates bg"""
@@ -61,12 +62,17 @@ class CGM_Service:
 
 
 if __name__ == "__main__":
-    dexcom_dir = f"{os.path.expanduser("~")}/.dexcom/"
+    dexcom_dir = f"{os.path.expanduser('~')}/.dexcom/"
 
     try:
-        # app = CGM_Service(dexcom_dir=dexcom_dir, time_step=5)
-        app = CGM_Service(GDBG, dexcom_dir=dexcom_dir, time_step=10)
+        app = CGM_Service(dexcom_dir=dexcom_dir, time_step=5)
         app.start()
+
+    except KeyboardInterrupt:
+        log(
+            "Program exited...\n\n\t\t(✦⚈_⚈)~~~☞ later babe\n",
+        )
+        sys.exit(0)
 
     except Exception as error:
         _log.error("error running CGM Service", str(error))
